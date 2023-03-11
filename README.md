@@ -1,6 +1,6 @@
 # 🤔 Much Idea
 
-Ultra simple heirarchical idea generator. [Check out the live application here](https://muchidea.web.app).
+Ultra simple hierarchical idea generator. [Check out the live application here](https://muchidea.web.app).
 
 ## Requirements
 

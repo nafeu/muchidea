@@ -1,8 +1,6 @@
 import { find, map, sample, includes, flattenDeep, keys, uniq } from 'lodash';
 
-import { ROOT_CONCEPT } from './constants';
-
-export const generateIdeas = ({ concepts, count }) => {
+export const generateIdeas = ({ concepts, count, root }) => {
   const conceptCollection = map(keys(concepts), key => ({
     id: key,
     data: concepts[key]
@@ -37,7 +35,7 @@ export const generateIdeas = ({ concepts, count }) => {
   }
 
   while (originalIdeaCounter > 0) {
-    const idea = interpolate(sample(find(conceptCollection, { id: ROOT_CONCEPT }).data))
+    const idea = interpolate(sample(find(conceptCollection, { id: root }).data))
 
     const isOriginalIdea = !includes(ideas, idea);
 

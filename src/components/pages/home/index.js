@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { withRouter } from 'react-router-dom';
 // import randomMaterialColor from 'random-material-color';
 // import Color from 'color';
@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 import Auth from '../../auth';
 
 import { generateIdeas } from '../../../services/idea';
+import { buildConcepts } from '../../../services/concept';
 import { EXAMPLE_CONCEPTS, EXAMPLE_COUNT } from '../../../services/idea/constants';
 
 const Home = ({
@@ -16,33 +17,46 @@ const Home = ({
   setIsLoading,
   isSignedIn
 }) => {
-  const [generatedIdeas, setGeneratedIdeas] = useState([])
-  const [issuesDuringGeneration, setIssuesDuringGeneration] = useState([])
+  const [generatedIdeas, setGeneratedIdeas] = useState([]);
+  const [issuesDuringGeneration, setIssuesDuringGeneration] = useState([]);
+  const [rawConceptText, setRawConceptText] = useState(EXAMPLE_CONCEPTS);
+  const [count, setCount] = useState(EXAMPLE_COUNT);
+
+  const textAreaRef = useRef();
 
   useEffect(() => {
     generateNewIdeas();
   }, [])
 
   const generateNewIdeas = () => {
-    const { issues, ideas } = generateIdeas({
-      concepts: EXAMPLE_CONCEPTS,
-      count: EXAMPLE_COUNT
-    });
+    const updatedRawConceptText = textAreaRef.current?.value;
+
+    const { concepts, root } = buildConcepts(updatedRawConceptText);
+    const { issues, ideas }  = generateIdeas({ concepts, root, count });
 
     setGeneratedIdeas(ideas);
     setIssuesDuringGeneration(issues);
+    setRawConceptText(updatedRawConceptText);
   }
 
   const handleClickGenerateIdeas = () => {
     generateNewIdeas();
   }
 
+  const handleChangeCount = event => {
+    const { value: updatedCount } = event.target;
+
+    setCount(updatedCount);
+  }
+
   return (
     <div>
-      <button onClick={handleClickGenerateIdeas}>Generate Ideas</button>
+      <textarea className="w-full h-96" ref={textAreaRef} placeholder="Enter concepts" defaultValue={rawConceptText}/>
+      <input type="number" min={1} max={20} value={count} onChange={handleChangeCount} />
+      <button onClick={handleClickGenerateIdeas}>Generate</button>
       {generatedIdeas && (
         <div className="text-center p-4">
-          <div className="font-bold">Ideas</div>
+          <div className="font-bold">Results</div>
           {generatedIdeas.map(idea => (
             <div key={idea}>{idea}</div>
           ))}
