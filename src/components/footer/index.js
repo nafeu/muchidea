@@ -11,9 +11,7 @@ const Footer = ({ user, firebase }) => {
 
 const Credits = () => (
   <Fragment>
-    <Link to="/privacy-policy">Privacy Policy</Link>
-    🤔 Much Idea was made with ❤️ by <a href="https://nafeu.com/about">Nafeu.</a>
-    <a href="https://www.buymeacoffee.com/nafeunasir">Want To Support The App? Buy Me A Coffee ☕️😊</a>
+    <Link to="/privacy-policy">Privacy Policy</Link> | Much Idea was made with love by <a href="https://nafeu.com/about">Nafeu</a> | <a href="https://www.buymeacoffee.com/nafeunasir">Want To Support The App? Buy Me A Coffee :)</a>
   </Fragment>
 )
 

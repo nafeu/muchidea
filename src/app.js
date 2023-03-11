@@ -9,23 +9,13 @@ import "firebase/auth";
 import { FirestoreProvider } from "@react-firebase/firestore";
 import { ScaleLoader } from "react-spinners"
 
-import "./app.css";
 import Navigation from "./components/navigation";
 import Footer from "./components/footer";
 import Home from './components/pages/home';
 import PrivacyPolicy from './components/pages/privacy-policy';
 
-const ONE_SECOND = 1000;
-
 function App({ isSignedIn, user, config, firebase }) {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    let loadingTimeout = setTimeout(() => setIsLoading(false), ONE_SECOND);
-    return () => {
-      clearTimeout(loadingTimeout);
-    }
-  }, [])
+  const [isLoading, setIsLoading] = useState(false);
 
   const [localConfig, setLocalConfig] = useState([]);
 
