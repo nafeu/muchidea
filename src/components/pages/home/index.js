@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { withRouter } from 'react-router-dom';
 // import randomMaterialColor from 'random-material-color';
 // import Color from 'color';
+import { find } from 'lodash';
 
 import Auth from '../../auth';
 
@@ -19,10 +20,15 @@ const Home = ({
 }) => {
   const [results, setResults] = useState(localData.results);
   const [issuesDuringGeneration, setIssuesDuringGeneration] = useState(localData.issuesDuringGeneration);
-  const [rawConceptText, setRawConceptText] = useState(localData.rawConceptText);
   const [count, setCount] = useState(DEFAULT_COUNT);
+  const [conceptCollection, setConceptCollection] = useState(localData.conceptCollection);
+
+  const defaultRawConceptText = localData.rawConceptText;
 
   const textAreaRef = useRef();
+
+  const getRawConceptText = () => textAreaRef.current?.value;
+  const setRawConceptText = value => textAreaRef.current.value = value;
 
   useEffect(() => {
     if (results === []) {
@@ -31,20 +37,21 @@ const Home = ({
   }, [])
 
   const generateNewIdeas = () => {
-    const updatedRawConceptText = textAreaRef.current?.value;
+    const updatedRawConceptText = getRawConceptText();
 
-    const { concepts, root } = buildConcepts(updatedRawConceptText);
-    const { issues, ideas }  = generateIdeas({ concepts, root, count });
+    const { issues: issuesBuildingConcepts, concepts, root } = buildConcepts(updatedRawConceptText);
+    const { issues: issuesGeneratingIdeas, ideas }  = generateIdeas({ concepts, root, count });
+
+    const allIssues = [...issuesBuildingConcepts, ...issuesGeneratingIdeas];
 
     setResults(ideas);
-    setRawConceptText(updatedRawConceptText);
 
-    setIssuesDuringGeneration(issues);
+    setIssuesDuringGeneration(allIssues);
 
     setLocalData({
       rawConceptText: updatedRawConceptText,
       results: ideas,
-      issuesDuringGeneration: issues
+      issuesDuringGeneration: allIssues
     });
   }
 
@@ -58,9 +65,28 @@ const Home = ({
     setCount(updatedCount);
   }
 
+  const handleSelectConcept = event => {
+    const updatedRawConceptText = find(conceptCollection, { id: event.target.value }).text;
+
+    setRawConceptText(updatedRawConceptText);
+  }
+
   return (
     <div>
-      <textarea className="w-full h-96" ref={textAreaRef} placeholder="Enter concepts" defaultValue={rawConceptText}/>
+      <select onChange={handleSelectConcept}>
+        {conceptCollection.map(({ id }) => {
+          return (
+            <option key={id} value={id}>{id}</option>
+          )
+        })}
+      </select>
+      <hr/>
+      <textarea
+        className="m-4 p-4 border border-black w-1/2 h-96"
+        ref={textAreaRef}
+        placeholder="Enter concepts"
+        defaultValue={defaultRawConceptText}
+      />
       <input type="number" min={1} max={20} value={count} onChange={handleChangeCount} />
       <button onClick={handleClickGenerateIdeas}>Generate</button>
       {results.length > 0 && (

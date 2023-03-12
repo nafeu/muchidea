@@ -24,15 +24,18 @@ function App({ isSignedIn, user, config, firebase }) {
   useEffect(() => {
     const localData = JSON.parse(localStorage.getItem('muchidea-data'));
 
-    const isMissingLocalDataKeys = localData.rawConceptText === undefined
+    const isMissingLocalDataKeys = localData === null
+      || localData.rawConceptText === undefined
       || localData.results === undefined
       || localData.issuesDuringGeneration === undefined
+      || localData.conceptCollection === undefined
 
     if (localData && !isMissingLocalDataKeys) {
       setLocalData(localData);
     } else {
       setLocalData({
-        rawConceptText: EXAMPLE_CONCEPTS,
+        conceptCollection: EXAMPLE_CONCEPTS,
+        rawConceptText: EXAMPLE_CONCEPTS[0].text,
         results: [],
         issuesDuringGeneration: []
       });

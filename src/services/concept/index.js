@@ -7,9 +7,10 @@ export const buildConcepts = rawText => {
 
   let activeKey = null;
   let root = null;
+  const issues = [];
 
   for (const line of conceptText) {
-    const isConceptKey = line[0] === '#';
+    const isConceptKey = line[0] === '#' && line.length > 1;
 
     if (isConceptKey) {
       activeKey = line.substring(1);
@@ -25,5 +26,9 @@ export const buildConcepts = rawText => {
     }
   }
 
-  return { concepts, root }
+  if (root === null) {
+    issues.push('Missing root id');
+  }
+
+  return { concepts, root, issues }
 }

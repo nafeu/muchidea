@@ -1,7 +1,26 @@
-import { find, map, sample, includes, flattenDeep, keys, uniq } from 'lodash';
-import { MAX_ATTEMPT_MULTIPLIER } from './constants';
+import { find, map, sample, includes, keys, uniq } from 'lodash';
+import { DEFAULT_MAX_ATTEMPT_COUNT } from './constants';
 
-export const generateIdeas = ({ concepts, count, root }) => {
+export const generateIdeas = ({
+  concepts,
+  count,
+  root,
+  maxAttemptCount = DEFAULT_MAX_ATTEMPT_COUNT
+}) => {
+  const isMissingConcepts = concepts === null
+    || concepts === undefined
+    || Object.keys(concepts).length === 0;
+  const isMissingCount = count === null || count === undefined;
+  const isMissingRoot = root === null || root === undefined;
+
+  const missingIssues = [
+    ...(isMissingConcepts ? ['Missing concept map'] : []),
+    ...(isMissingCount ? ['Missing count'] : []),
+    ...(isMissingRoot ? ['Missing root'] : []),
+  ]
+
+  if (missingIssues.length > 0) return ({ issues: missingIssues, ideas: [] });
+
   const conceptCollection = map(keys(concepts), key => ({
     id: key,
     data: concepts[key]
@@ -10,36 +29,39 @@ export const generateIdeas = ({ concepts, count, root }) => {
   let originalIdeaCounter = count;
   let attempts = 0;
 
-  const maxAttempts = count * MAX_ATTEMPT_MULTIPLIER;
-
   const ideas = [];
   let issues = [];
 
   const interpolate = inputString => {
-    const inputArray = inputString.split(' ');
+    const idPattern = /(?<!\[)\[(?:(?!\[\[).)*?\](?!\])/g;
+    const squareBracketPattern = /^\[|\]$/g;
+    const doubleSquareBracketPattern = /\[\[(.*?)\]\]/g;
 
-    const output = map(inputArray, item => {
-      const hasSquareBrackets = includes(item, '[') && includes(item, ']');
+    let input = inputString;
+    const matches = inputString.matchAll(idPattern);
 
-      if (hasSquareBrackets) {
-        const id = item.substring(1, item.length - 1);
+    for (const [match] of matches) {
+      const isEscapedMatch = match.match(doubleSquareBracketPattern) !== null
 
-        const matchedConcept = find(conceptCollection, { id });
-
-        if (matchedConcept) {
-          return interpolate(sample(matchedConcept.data));
-        } else {
-          issues.push(`Could not match the concept: ${id}`)
-        }
+      if (isEscapedMatch) {
+        input = input.replace(match, match.replace(squareBracketPattern, ''));
+        continue;
       }
 
-      return item;
-    })
+      const id = match.replace(squareBracketPattern, '');
+      const matchedConcept = find(conceptCollection, { id });
 
-    return flattenDeep(output).join(' ');
+      if (matchedConcept) {
+        input = input.replace(match, interpolate(sample(matchedConcept.data)));
+      } else {
+        issues.push(`Could not match the concept: ${id}`)
+      }
+    }
+
+    return input;
   }
 
-  while (originalIdeaCounter > 0 && attempts < maxAttempts) {
+  while (originalIdeaCounter > 0 && attempts < maxAttemptCount) {
     const idea = interpolate(sample(find(conceptCollection, { id: root }).data))
 
     const isOriginalIdea = !includes(ideas, idea);
@@ -52,11 +74,11 @@ export const generateIdeas = ({ concepts, count, root }) => {
     attempts += 1;
   }
 
-  if (attempts === maxAttempts) {
+  if (attempts === maxAttemptCount) {
     issues.push('Reached maximum number of attempts trying to create unique results.')
   }
 
-  issues = uniq(issues);
+  issues = uniq(issues) || [];
 
   return { ideas, issues }
 }

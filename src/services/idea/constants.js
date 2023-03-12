@@ -1,20 +1,51 @@
-export const EXAMPLE_CONCEPTS = `#prompt
-write a [narrative] about [topic]
+export const EXAMPLE_CONCEPT_A = `#root
+[a] [b] [c]
 
-#narrative
-short story
-[poetry]
+#a
+1
+2
+3
 
-#poetry
-haiku
-rap song
-free form poem
+#b
+x
+y
+z
 
-#topic
-romance
-revenge
-growth
-unity`;
+#c
+!
+#
+*
+`;
+
+export const EXAMPLE_CONCEPT_B = `#root
+[d] [e] [f]
+
+#d
+4
+5
+6
+
+#e
+u
+v
+w
+
+#f
+$
+%
+^
+`;
 
 export const DEFAULT_COUNT = 5;
-export const MAX_ATTEMPT_MULTIPLIER = 3;
+export const DEFAULT_MAX_ATTEMPT_COUNT = 9999;
+
+export const EXAMPLE_CONCEPTS = [
+  {
+    id: 'exampleA',
+    text: EXAMPLE_CONCEPT_A
+  },
+  {
+    id: 'exampleB',
+    text: EXAMPLE_CONCEPT_B
+  },
+]
