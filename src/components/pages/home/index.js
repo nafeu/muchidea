@@ -7,25 +7,27 @@ import Auth from '../../auth';
 
 import { generateIdeas } from '../../../services/idea';
 import { buildConcepts } from '../../../services/concept';
-import { EXAMPLE_CONCEPTS, EXAMPLE_COUNT } from '../../../services/idea/constants';
+import { DEFAULT_COUNT } from '../../../services/idea/constants';
 
 const Home = ({
   user,
   firebase,
-  setLocalConfig,
-  localConfig,
+  setLocalData,
+  localData,
   setIsLoading,
   isSignedIn
 }) => {
-  const [generatedIdeas, setGeneratedIdeas] = useState([]);
-  const [issuesDuringGeneration, setIssuesDuringGeneration] = useState([]);
-  const [rawConceptText, setRawConceptText] = useState(EXAMPLE_CONCEPTS);
-  const [count, setCount] = useState(EXAMPLE_COUNT);
+  const [results, setResults] = useState(localData.results);
+  const [issuesDuringGeneration, setIssuesDuringGeneration] = useState(localData.issuesDuringGeneration);
+  const [rawConceptText, setRawConceptText] = useState(localData.rawConceptText);
+  const [count, setCount] = useState(DEFAULT_COUNT);
 
   const textAreaRef = useRef();
 
   useEffect(() => {
-    generateNewIdeas();
+    if (results === []) {
+      generateNewIdeas();
+    }
   }, [])
 
   const generateNewIdeas = () => {
@@ -34,9 +36,16 @@ const Home = ({
     const { concepts, root } = buildConcepts(updatedRawConceptText);
     const { issues, ideas }  = generateIdeas({ concepts, root, count });
 
-    setGeneratedIdeas(ideas);
-    setIssuesDuringGeneration(issues);
+    setResults(ideas);
     setRawConceptText(updatedRawConceptText);
+
+    setIssuesDuringGeneration(issues);
+
+    setLocalData({
+      rawConceptText: updatedRawConceptText,
+      results: ideas,
+      issuesDuringGeneration: issues
+    });
   }
 
   const handleClickGenerateIdeas = () => {
@@ -54,15 +63,15 @@ const Home = ({
       <textarea className="w-full h-96" ref={textAreaRef} placeholder="Enter concepts" defaultValue={rawConceptText}/>
       <input type="number" min={1} max={20} value={count} onChange={handleChangeCount} />
       <button onClick={handleClickGenerateIdeas}>Generate</button>
-      {generatedIdeas && (
+      {results.length > 0 && (
         <div className="text-center p-4">
           <div className="font-bold">Results</div>
-          {generatedIdeas.map(idea => (
+          {results.map(idea => (
             <div key={idea}>{idea}</div>
           ))}
         </div>
       )}
-      {issuesDuringGeneration && (
+      {issuesDuringGeneration.length > 0 && (
         <div className="text-center p-4">
           <div className="font-bold">Issues</div>
           {issuesDuringGeneration.map(issue => (

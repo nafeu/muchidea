@@ -1,49 +1,20 @@
-export const EXAMPLE_CONCEPTS = `#action
-[conceive] recording [instrument] [style]
-[conceive] recording jam session [style]
-[conceive] of [digital_art]
-[conceive] showing how [music_process] is done
-[conceive] showing how [generative_process] is done
+export const EXAMPLE_CONCEPTS = `#prompt
+write a [narrative] about [topic]
 
-#digital_art
-landscape digital art with [music_source]
-abstract pattern digital art with [music_source]
+#narrative
+short story
+[poetry]
 
-#music_source
-your own music
-drone sounds
-atmospheric synths
-music by an artist you like
+#poetry
+haiku
+rap song
+free form poem
 
-#style
-for [genre]
+#topic
+romance
+revenge
+growth
+unity`;
 
-#genre
-lofi chill beats
-dark techno
-neurofunk
-progressive breaks
-deep house
-progressive house
-glitch IDM
-drone chill
-
-#music_process
-making drone sounds
-making drone sounds [style]
-making deep melodic atmospheres
-using reverse effects
-
-#instrument
-guitar
-piano
-synth
-
-#media
-video
-
-#conceive
-make [media]
-stream`;
-
-export const EXAMPLE_COUNT = 5;
+export const DEFAULT_COUNT = 5;
+export const MAX_ATTEMPT_MULTIPLIER = 3;

@@ -29,17 +29,6 @@ const Auth = ({
       });
   }
 
-  const handleClickLoginGuest = () => {
-    setIsLoggingIn(true);
-    firebase.auth().signInAnonymously()
-      .then(() => {
-        setIsLoggingIn(false);
-      })
-      .catch(() => {
-        console.log('Anonymous login unsuccessful.')
-      });
-  }
-
   if (isLoggingIn) {
     return <ScaleLoader size={20} margin={5} />
   }
@@ -56,7 +45,6 @@ const Auth = ({
   return (
     <div>
       <button onClick={handleClickLoginGoogle}>Sign In With Google</button>
-      <button onClick={handleClickLoginGuest}>Continue as a Guest</button>
     </div>
   )
 };

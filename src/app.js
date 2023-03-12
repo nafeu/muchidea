@@ -14,26 +14,36 @@ import Footer from "./components/footer";
 import Home from './components/pages/home';
 import PrivacyPolicy from './components/pages/privacy-policy';
 
+import { EXAMPLE_CONCEPTS } from './services/idea/constants';
+
 function App({ isSignedIn, user, config, firebase }) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const [localConfig, setLocalConfig] = useState([]);
+  const [localData, setLocalData] = useState([]);
 
   useEffect(() => {
-    const localConfig = JSON.parse(localStorage.getItem('muchidea-settings'));
+    const localData = JSON.parse(localStorage.getItem('muchidea-data'));
 
-    if (localConfig) {
-      setLocalConfig(localConfig);
+    const isMissingLocalDataKeys = localData.rawConceptText === undefined
+      || localData.results === undefined
+      || localData.issuesDuringGeneration === undefined
+
+    if (localData && !isMissingLocalDataKeys) {
+      setLocalData(localData);
     } else {
-      setLocalConfig({ conceptCollection: [] });
+      setLocalData({
+        rawConceptText: EXAMPLE_CONCEPTS,
+        results: [],
+        issuesDuringGeneration: []
+      });
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('muchidea-settings', JSON.stringify(localConfig));
-  }, [localConfig]);
+    localStorage.setItem('muchidea-data', JSON.stringify(localData));
+  }, [localData]);
 
-  if (isLoading) {
+  if (isLoading || localData.rawConceptText === undefined) {
     return (
       <div className="app-loading">
         <ScaleLoader size={20} margin={5} color="#ffc048" />
@@ -58,8 +68,8 @@ function App({ isSignedIn, user, config, firebase }) {
                     isSignedIn={isSignedIn}
                     user={user}
                     setIsLoading={setIsLoading}
-                    setLocalConfig={setLocalConfig}
-                    localConfig={localConfig}
+                    setLocalData={setLocalData}
+                    localData={localData}
                   />
                 </Route>
               </Switch>

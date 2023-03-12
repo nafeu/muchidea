@@ -1,4 +1,5 @@
 import { find, map, sample, includes, flattenDeep, keys, uniq } from 'lodash';
+import { MAX_ATTEMPT_MULTIPLIER } from './constants';
 
 export const generateIdeas = ({ concepts, count, root }) => {
   const conceptCollection = map(keys(concepts), key => ({
@@ -7,6 +8,10 @@ export const generateIdeas = ({ concepts, count, root }) => {
   }))
 
   let originalIdeaCounter = count;
+  let attempts = 0;
+
+  const maxAttempts = count * MAX_ATTEMPT_MULTIPLIER;
+
   const ideas = [];
   let issues = [];
 
@@ -34,7 +39,7 @@ export const generateIdeas = ({ concepts, count, root }) => {
     return flattenDeep(output).join(' ');
   }
 
-  while (originalIdeaCounter > 0) {
+  while (originalIdeaCounter > 0 && attempts < maxAttempts) {
     const idea = interpolate(sample(find(conceptCollection, { id: root }).data))
 
     const isOriginalIdea = !includes(ideas, idea);
@@ -43,6 +48,12 @@ export const generateIdeas = ({ concepts, count, root }) => {
       ideas.push(idea);
       originalIdeaCounter -= 1;
     }
+
+    attempts += 1;
+  }
+
+  if (attempts === maxAttempts) {
+    issues.push('Reached maximum number of attempts trying to create unique results.')
   }
 
   issues = uniq(issues);
