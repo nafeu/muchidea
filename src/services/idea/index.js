@@ -1,11 +1,18 @@
 import { find, map, sample, includes, keys, uniq } from 'lodash';
-import { DEFAULT_MAX_ATTEMPT_COUNT } from './constants';
+import {
+  DEFAULT_ATTEMPT_LIMIT,
+  DEFAULT_RECURSION_LIMIT,
+  PATTERN_ID,
+  PATTERN_SQUARE_BRACKET,
+  PATTERN_DOUBLE_SQUARE_BRACKET
+} from './constants';
 
 export const generateIdeas = ({
+  attemptLimit = DEFAULT_ATTEMPT_LIMIT,
   concepts,
   count,
-  root,
-  maxAttemptCount = DEFAULT_MAX_ATTEMPT_COUNT
+  recursionLimit = DEFAULT_RECURSION_LIMIT,
+  root
 }) => {
   const isMissingConcepts = concepts === null
     || concepts === undefined
@@ -27,28 +34,32 @@ export const generateIdeas = ({
   }))
 
   let originalIdeaCounter = count;
-  let attempts = 0;
+  let attemptCount = 0;
+  let recursionCount = 0;
 
   const ideas = [];
   let issues = [];
 
   const interpolate = inputString => {
-    const idPattern = /(?<!\[)\[(?:(?!\[\[).)*?\](?!\])/g;
-    const squareBracketPattern = /^\[|\]$/g;
-    const doubleSquareBracketPattern = /\[\[(.*?)\]\]/g;
+    recursionCount += 1;
+
+    if (recursionCount >= recursionLimit) {
+      issues.push(`Reached recursion limit (${recursionLimit}) generating results`)
+      return inputString;
+    }
 
     let input = inputString;
-    const matches = inputString.matchAll(idPattern);
+    const matches = inputString.matchAll(PATTERN_ID);
 
     for (const [match] of matches) {
-      const isEscapedMatch = match.match(doubleSquareBracketPattern) !== null
+      const isEscapedMatch = match.match(PATTERN_DOUBLE_SQUARE_BRACKET) !== null
 
       if (isEscapedMatch) {
-        input = input.replace(match, match.replace(squareBracketPattern, ''));
+        input = input.replace(match, match.replace(PATTERN_SQUARE_BRACKET, ''));
         continue;
       }
 
-      const id = match.replace(squareBracketPattern, '');
+      const id = match.replace(PATTERN_SQUARE_BRACKET, '');
       const matchedConcept = find(conceptCollection, { id });
 
       if (matchedConcept) {
@@ -61,7 +72,7 @@ export const generateIdeas = ({
     return input;
   }
 
-  while (originalIdeaCounter > 0 && attempts < maxAttemptCount) {
+  while (originalIdeaCounter > 0 && attemptCount < attemptLimit) {
     const idea = interpolate(sample(find(conceptCollection, { id: root }).data))
 
     const isOriginalIdea = !includes(ideas, idea);
@@ -71,11 +82,11 @@ export const generateIdeas = ({
       originalIdeaCounter -= 1;
     }
 
-    attempts += 1;
+    attemptCount += 1;
   }
 
-  if (attempts === maxAttemptCount) {
-    issues.push('Reached maximum number of attempts trying to create unique results.')
+  if (attemptCount === attemptLimit) {
+    issues.push(`Reached limit of attempts (${attemptLimit}) to create unique results.`)
   }
 
   issues = uniq(issues) || [];

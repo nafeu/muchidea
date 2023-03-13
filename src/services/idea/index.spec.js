@@ -48,7 +48,7 @@ describe('generateIdeas', () => {
         const result = generateIdeas(exampleInput);
 
         expect([
-          ['Reached maximum number of attempts trying to create unique results.'],
+          ['Reached limit of attempts (9999) to create unique results.'],
           []
         ]).toContainEqual(result.issues);
         expect(result.ideas.length).toBe(2);
@@ -169,7 +169,7 @@ describe('generateIdeas', () => {
         },
         count: 2,
         root: 'root',
-        maxAttemptCount: 2
+        attemptLimit: 2
       }
 
       const result = generateIdeas(exampleInput);
@@ -180,7 +180,31 @@ describe('generateIdeas', () => {
         ['a'],
       ]).toContainEqual(result.ideas);
       expect(result.issues).toEqual([
-        'Reached maximum number of attempts trying to create unique results.'
+        'Reached limit of attempts (2) to create unique results.'
+      ]);
+    })
+  });
+  describe('given a small non-empty concept map with a cyclical mapping', () => {
+    it('should return a maximum recursion issue', () => {
+      const exampleInput = {
+        concepts: {
+          "a": ['[b]'],
+          "b": ['[a]']
+        },
+        count: 1,
+        root: 'a'
+      }
+
+      const result = generateIdeas(exampleInput);
+
+      expect(result.issues.length).toBe(1);
+      expect(result.ideas.length).toBe(1);
+      expect([
+        ['[a]'],
+        ['[b]']
+      ]).toContainEqual(result.ideas);
+      expect(result.issues).toEqual([
+        'Reached recursion limit (2000) generating results'
       ]);
     })
   });

@@ -37,7 +37,8 @@ $
 `;
 
 export const DEFAULT_COUNT = 5;
-export const DEFAULT_MAX_ATTEMPT_COUNT = 9999;
+export const DEFAULT_ATTEMPT_LIMIT = 2000;
+export const DEFAULT_RECURSION_LIMIT = 2000;
 
 export const EXAMPLE_CONCEPTS = [
   {
@@ -49,3 +50,7 @@ export const EXAMPLE_CONCEPTS = [
     text: EXAMPLE_CONCEPT_B
   },
 ]
+
+export const PATTERN_ID = /(?<!\[)\[(?:(?!\[\[).)*?\](?!\])/g;
+export const PATTERN_SQUARE_BRACKET = /^\[|\]$/g;
+export const PATTERN_DOUBLE_SQUARE_BRACKET = /\[\[(.*?)\]\]/g;
