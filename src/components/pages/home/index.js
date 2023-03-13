@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 // import randomMaterialColor from 'random-material-color';
 // import Color from 'color';
@@ -22,13 +22,8 @@ const Home = ({
   const [issuesDuringGeneration, setIssuesDuringGeneration] = useState(localData.issuesDuringGeneration);
   const [count, setCount] = useState(DEFAULT_COUNT);
   const [conceptCollection, setConceptCollection] = useState(localData.conceptCollection);
-
-  const defaultRawConceptText = localData.rawConceptText;
-
-  const textAreaRef = useRef();
-
-  const getRawConceptText = () => textAreaRef.current?.value;
-  const setRawConceptText = value => textAreaRef.current.value = value;
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [rawConceptText, setRawConceptText] = useState(localData.rawConceptText);
 
   useEffect(() => {
     if (results === []) {
@@ -37,19 +32,17 @@ const Home = ({
   }, [])
 
   const generateNewIdeas = () => {
-    const updatedRawConceptText = getRawConceptText();
-
-    const { issues: issuesBuildingConcepts, concepts, root } = buildConcepts(updatedRawConceptText);
+    const { issues: issuesBuildingConcepts, concepts, root } = buildConcepts(rawConceptText);
     const { issues: issuesGeneratingIdeas, ideas }  = generateIdeas({ concepts, root, count });
 
     const allIssues = [...issuesBuildingConcepts, ...issuesGeneratingIdeas];
 
     setResults(ideas);
-
     setIssuesDuringGeneration(allIssues);
 
     setLocalData({
-      rawConceptText: updatedRawConceptText,
+      conceptCollection,
+      rawConceptText,
       results: ideas,
       issuesDuringGeneration: allIssues
     });
@@ -71,47 +64,72 @@ const Home = ({
     setRawConceptText(updatedRawConceptText);
   }
 
+  const handleClickEdit = () => {
+    setIsEditMode(true);
+  }
+
+  const handleClickViewGenerator = () => {
+    setIsEditMode(false);
+  }
+
+  const handleChangeRawConceptText = event => {
+    const updatedRawConceptText = event.target.value;
+    setRawConceptText(updatedRawConceptText);
+    setLocalData({ ...localData, rawConceptText })
+  }
+
   return (
     <div>
-      <select onChange={handleSelectConcept}>
-        {conceptCollection.map(({ id }) => {
-          return (
-            <option key={id} value={id}>{id}</option>
-          )
-        })}
-      </select>
-      <hr/>
-      <textarea
-        className="m-4 p-4 border border-black w-1/2 h-96"
-        ref={textAreaRef}
-        placeholder="Enter concepts"
-        defaultValue={defaultRawConceptText}
-      />
-      <input type="number" min={1} max={20} value={count} onChange={handleChangeCount} />
-      <button onClick={handleClickGenerateIdeas}>Generate</button>
-      {results.length > 0 && (
-        <div className="text-center p-4">
-          <div className="font-bold">Results</div>
-          {results.map(idea => (
-            <div key={idea}>{idea}</div>
-          ))}
+      <div>
+        {!isEditMode && (<button onClick={handleClickEdit}>Edit</button>)}
+        {isEditMode && (<button onClick={handleClickViewGenerator}>Generate</button>)}
+      </div>
+      {isEditMode ? (
+        <div>
+          <select onChange={handleSelectConcept}>
+            {conceptCollection.map(({ id }) => {
+              return (
+                <option key={id} value={id}>{id}</option>
+              )
+            })}
+          </select>
+          <hr/>
+          <textarea
+            className="m-4 p-4 border border-black w-1/2 h-96"
+            placeholder="Enter concepts"
+            onChange={handleChangeRawConceptText}
+            value={rawConceptText}
+          />
+          <Auth
+            user={user}
+            firebase={firebase}
+            isSignedIn={isSignedIn}
+            setIsLoading={setIsLoading}
+          />
         </div>
-      )}
-      {issuesDuringGeneration.length > 0 && (
-        <div className="text-center p-4">
-          <div className="font-bold">Issues</div>
-          {issuesDuringGeneration.map(issue => (
-            <div key={issue}>{issue}</div>
-          ))}
+      ) : (
+        <div>
+          <input type="number" min={1} max={20} value={count} onChange={handleChangeCount} />
+          <button onClick={handleClickGenerateIdeas}>Generate</button>
+          {results.length > 0 && (
+            <div className="text-center p-4">
+              <div className="font-bold">Results</div>
+              {results.map(idea => (
+                <div key={idea}>{idea}</div>
+              ))}
+            </div>
+          )}
+          {issuesDuringGeneration.length > 0 && (
+            <div className="text-center p-4">
+              <div className="font-bold">Issues</div>
+              {issuesDuringGeneration.map(issue => (
+                <div key={issue}>{issue}</div>
+              ))}
+            </div>
+          )}
         </div>
       )}
       <hr />
-      <Auth
-        user={user}
-        firebase={firebase}
-        isSignedIn={isSignedIn}
-        setIsLoading={setIsLoading}
-      />
     </div>
   )
 };
