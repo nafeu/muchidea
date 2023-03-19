@@ -25,7 +25,8 @@ function App({ isSignedIn, user, config, firebase }) {
     const localData = JSON.parse(localStorage.getItem('muchidea-data'));
 
     const isMissingLocalDataKeys = localData === null
-      || localData.rawConceptText === undefined
+      || localData.rawConceptMapText === undefined
+      || localData.rawConceptMapId === undefined
       || localData.results === undefined
       || localData.issuesDuringGeneration === undefined
       || localData.conceptCollection === undefined
@@ -35,7 +36,8 @@ function App({ isSignedIn, user, config, firebase }) {
     } else {
       setLocalData({
         conceptCollection: EXAMPLE_CONCEPTS,
-        rawConceptText: EXAMPLE_CONCEPTS[0].text,
+        rawConceptMapText: EXAMPLE_CONCEPTS[0].text,
+        rawConceptMapId: EXAMPLE_CONCEPTS[0].id,
         results: [],
         issuesDuringGeneration: []
       });
@@ -46,7 +48,7 @@ function App({ isSignedIn, user, config, firebase }) {
     localStorage.setItem('muchidea-data', JSON.stringify(localData));
   }, [localData]);
 
-  if (isLoading || localData.rawConceptText === undefined) {
+  if (isLoading || localData.rawConceptMapText === undefined || localData.rawConceptMapId === undefined) {
     return (
       <div className="app-loading">
         <ScaleLoader size={20} margin={5} color="#ffc048" />
