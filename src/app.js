@@ -45,6 +45,28 @@ function App({ isSignedIn, user, config, firebase }) {
   }, []);
 
   useEffect(() => {
+    if (user) {
+      const db = firebase.firestore()
+
+      const userCollectionsRef = db.collection('user_collections');
+
+      userCollectionsRef.doc(user.uid).get()
+        .then((documentRef) => {
+          const { conceptCollection } = documentRef.data();
+
+          setLocalData({
+            conceptCollection: conceptCollection,
+            rawConceptMapText: conceptCollection[0].text,
+            rawConceptMapId: conceptCollection[0].id,
+            results: [],
+            issuesDuringGeneration: []
+          });
+        })
+        .catch((error) => { console.log({ error }) })
+    }
+  }, [user])
+
+  useEffect(() => {
     localStorage.setItem('muchidea-data', JSON.stringify(localData));
   }, [localData]);
 

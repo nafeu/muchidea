@@ -1,31 +1,31 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
 import { ScaleLoader } from "react-spinners"
 
 const Auth = ({
   user,
   firebase,
   isSignedIn,
-  setIsLoading
+  setIsLoading,
+  onLogin,
+  onLogout
 }) => {
-  const history = useHistory();
-
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const handleClickLogout = () => {
     firebase.auth().signOut();
-    history.push('/');
+    onLogout();
   }
 
   const handleClickLoginGoogle = () => {
     setIsLoggingIn(true);
     const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(googleAuthProvider)
-      .then(() => {
+      .then((result) => {
         setIsLoggingIn(false);
+        onLogin(result.user);
       })
-      .catch(() => {
-        console.log('Google login unsuccessful.')
+      .catch((loginError) => {
+        console.log({ loginError })
       });
   }
 

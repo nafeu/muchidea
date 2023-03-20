@@ -8,7 +8,7 @@ import Auth from '../../auth';
 
 import { generateIdeas } from '../../../services/idea';
 import { buildConcepts } from '../../../services/concept';
-import { DEFAULT_COUNT } from '../../../services/idea/constants';
+import { DEFAULT_COUNT, EXAMPLE_CONCEPTS } from '../../../services/idea/constants';
 import { validateConceptMapId, buildNewConceptMap } from './helpers';
 
 const Home = ({
@@ -32,6 +32,8 @@ const Home = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [isRenameMode, setIsRenameMode] = useState(false);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
+
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (results === []) {
@@ -70,9 +72,9 @@ const Home = ({
   const handleSelectConceptMap = event => {
     const selectedId = event.target.value;
 
-    const updatedrawConceptMapText = find(conceptCollection, { id: selectedId }).text;
+    const updatedRawConceptText = find(conceptCollection, { id: selectedId }).text;
 
-    setRawConceptMapText(updatedrawConceptMapText);
+    setRawConceptMapText(updatedRawConceptText);
     setRawConceptMapId(selectedId)
     setRawConceptMapIdRenaming(selectedId)
   }
@@ -86,9 +88,25 @@ const Home = ({
   }
 
   const handleChangeRawConceptMapText = event => {
-    const updatedrawConceptMapText = event.target.value;
-    setRawConceptMapText(updatedrawConceptMapText);
-    setLocalData({ ...localData, rawConceptMapText })
+    const updatedRawConceptText = event.target.value;
+    const updatedConceptCollection = conceptCollection.map(conceptMap => {
+      if (conceptMap.id === rawConceptMapId) {
+        return {
+          ...conceptMap,
+          text: updatedRawConceptText
+        }
+      }
+
+      return conceptMap;
+    });
+
+    setRawConceptMapText(updatedRawConceptText);
+    setConceptCollection(updatedConceptCollection);
+    setLocalData({
+      ...localData,
+      rawConceptMapText,
+      conceptCollection: updatedConceptCollection
+    })
   }
 
   const handleClickRenameConceptMap = () => {
@@ -203,8 +221,66 @@ const Home = ({
     setIsDeleteMode(false);
   }
 
+  const handleClickSave = () => {
+    const db = firebase.firestore()
+
+    const userCollectionsRef = db.collection('user_collections');
+
+    setIsSaving(true);
+
+    userCollectionsRef.doc(user.uid).set({
+      owner: user.uid,
+      conceptCollection,
+      timestamp: (new Date()).getTime()
+    }).then(() => {
+      setIsSaving(false);
+    })
+    .catch((saveError) => {
+      console.log({ saveError });
+    })
+  }
+
   const handleClickPublishConceptMap = () => {
 
+  }
+
+  const handleLogin = loggedInUser => {
+    const db = firebase.firestore()
+
+    const userCollectionsRef = db.collection('user_collections');
+
+    userCollectionsRef.doc(loggedInUser.uid).get()
+      .then((documentRef) => {
+        const { conceptCollection: updatedConceptCollection } = documentRef.data();
+
+        setLocalData({
+          conceptCollection: updatedConceptCollection,
+          rawConceptMapText: updatedConceptCollection[0].text,
+          rawConceptMapId: updatedConceptCollection[0].id,
+          results: [],
+          issuesDuringGeneration: []
+        });
+
+        window.location.reload(false);
+      })
+      .catch((error) => { console.log({ error }) })
+
+  }
+
+  const handleLogout = () => {
+    setConceptCollection(EXAMPLE_CONCEPTS);
+    setRawConceptMapId(null);
+    setRawConceptMapIdRenaming(null);
+    setRawConceptMapText(null);
+    setLocalData({
+      conceptCollection: EXAMPLE_CONCEPTS,
+      rawConceptMapText: EXAMPLE_CONCEPTS[0].text,
+      rawConceptMapId: EXAMPLE_CONCEPTS[0].id,
+      results: [],
+      issuesDuringGeneration: []
+    });
+
+    window.location.reload(false);
   }
 
   return (
@@ -247,6 +323,11 @@ const Home = ({
             </Fragment>
           )}
           <button className="m-2" onClick={handleClickNewConceptMap}>[New]</button>
+          {rawConceptMapId && isSaving ? (
+            <button className="m-2">[Saving...]</button>
+          ) : (
+            <button className="m-2" onClick={handleClickSave}>[Save]</button>
+          )}
           {rawConceptMapId && (<button className="m-2" onClick={handleClickPublishConceptMap}>[Publish]</button>)}
           <hr/>
           {rawConceptMapText ? (
@@ -264,6 +345,8 @@ const Home = ({
             firebase={firebase}
             isSignedIn={isSignedIn}
             setIsLoading={setIsLoading}
+            onLogin={handleLogin}
+            onLogout={handleLogout}
           />
         </div>
       ) : (
