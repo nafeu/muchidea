@@ -12,6 +12,7 @@ import { ScaleLoader } from "react-spinners"
 import Navigation from "./components/navigation";
 import Footer from "./components/footer";
 import Home from './components/pages/home';
+import Shared from './components/pages/shared';
 import PrivacyPolicy from './components/pages/privacy-policy';
 
 import { EXAMPLE_CONCEPTS } from './services/idea/constants';
@@ -88,6 +89,14 @@ function App({ isSignedIn, user, config, firebase }) {
               <Switch>
                 <Route path="/privacy-policy">
                   <PrivacyPolicy />
+                </Route>
+                <Route path="/shared/:id">
+                  <Shared
+                    firebase={firebase}
+                    isSignedIn={isSignedIn}
+                    user={user}
+                    setIsLoading={setIsLoading}
+                  />
                 </Route>
                 <Route path="/">
                   <Home

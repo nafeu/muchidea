@@ -271,6 +271,7 @@ const Home = ({
     } catch (error) {
       // TODO: Handle error messages
       setIsSaving(false);
+      console.error(error);
       alert(error);
     }
   }
@@ -305,6 +306,7 @@ const Home = ({
     } catch (error) {
       // TODO: Handle error messages
       alert(error);
+      console.error(error);
       setIsPublishing(false);
     }
   }
@@ -376,7 +378,7 @@ const Home = ({
           )}
           {conceptMapId && (
             <button className="m-2" onClick={handleClickRenameConceptMap}>
-              {isRenameMode ? ('[Done]') : ('[Edit]')}
+              {isRenameMode ? ('[Done]') : ('[Rename]')}
             </button>
           )}
           {isDeleteMode ? (
@@ -438,6 +440,7 @@ const Home = ({
           {conceptMapId ? (
             <Fragment>
               <input type="number" min={1} max={20} value={count} onChange={handleChangeCount} />
+              <div>{conceptMapDescription}</div>
               <button onClick={handleClickGenerateIdeas}>Generate</button>
               {results.length > 0 && (
                 <div className="text-center p-4">
