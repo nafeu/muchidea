@@ -48,6 +48,9 @@ export const buildNewConceptMap = conceptCollection => {
 
   return {
     id: getNewUniqueId(existingIds),
-    text: '#prompt\nMake a [concept]\n\n#concept\nthing\nproject\nvideo'
+    text: '#prompt\nMake a [concept]\n\n#concept\nthing\nproject\nvideo',
+    description: ''
   }
 }
+
+export const getFourRandomDigits = () => (Math.floor(1000 + Math.random() * 9000))

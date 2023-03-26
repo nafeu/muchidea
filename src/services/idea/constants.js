@@ -1,39 +1,19 @@
-export const EXAMPLE_CONCEPT_A = `#root
-[a] [b] [c]
+export const EXAMPLE_CONCEPT = `#prompt
+Draw [number] [color] [shapes]
 
-#a
-1
-2
-3
+#number
+two
+three
 
-#b
-x
-y
-z
+#color
+red
+green
+blue
 
-#c
-!
-#
-*
-`;
-
-export const EXAMPLE_CONCEPT_B = `#root
-[d] [e] [f]
-
-#d
-4
-5
-6
-
-#e
-u
-v
-w
-
-#f
-$
-%
-^
+#shapes
+cirles
+squares
+triangles
 `;
 
 export const DEFAULT_COUNT = 5;
@@ -42,13 +22,10 @@ export const DEFAULT_RECURSION_LIMIT = 2000;
 
 export const EXAMPLE_CONCEPTS = [
   {
-    id: 'exampleA',
-    text: EXAMPLE_CONCEPT_A
-  },
-  {
-    id: 'exampleB',
-    text: EXAMPLE_CONCEPT_B
-  },
+    id: 'untitled_map',
+    text: EXAMPLE_CONCEPT,
+    description: ''
+  }
 ]
 
 export const PATTERN_ID = /(?<!\[)\[(?:(?!\[\[).)*?\](?!\])/g;

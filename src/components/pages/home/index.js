@@ -25,15 +25,17 @@ const Home = ({
 
   const [conceptCollection, setConceptCollection] = useState(localData.conceptCollection);
 
-  const [rawConceptMapText, setRawConceptMapText] = useState(localData.rawConceptMapText);
-  const [rawConceptMapId, setRawConceptMapId] = useState(localData.rawConceptMapId)
-  const [rawConceptMapIdRenaming, setRawConceptMapIdRenaming] = useState(localData.rawConceptMapId)
+  const [conceptMapText, setConceptMapText] = useState(localData.conceptMapText);
+  const [conceptMapId, setConceptMapId] = useState(localData.conceptMapId);
+  const [conceptMapIdRenaming, setConceptMapIdRenaming] = useState(localData.conceptMapId);
+  const [conceptMapDescription, setConceptMapDescription] = useState(localData.conceptMapDescription);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [isRenameMode, setIsRenameMode] = useState(false);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
 
   useEffect(() => {
     if (results === []) {
@@ -42,7 +44,7 @@ const Home = ({
   }, [])
 
   const generateNewIdeas = () => {
-    const { issues: issuesBuildingConcepts, concepts, root } = buildConcepts(rawConceptMapText);
+    const { issues: issuesBuildingConcepts, concepts, root } = buildConcepts(conceptMapText);
     const { issues: issuesGeneratingIdeas, ideas }  = generateIdeas({ concepts, root, count });
 
     const allIssues = [...issuesBuildingConcepts, ...issuesGeneratingIdeas];
@@ -52,8 +54,9 @@ const Home = ({
 
     setLocalData({
       conceptCollection,
-      rawConceptMapText,
-      rawConceptMapId,
+      conceptMapDescription,
+      conceptMapText,
+      conceptMapId,
       results: ideas,
       issuesDuringGeneration: allIssues
     });
@@ -72,11 +75,15 @@ const Home = ({
   const handleSelectConceptMap = event => {
     const selectedId = event.target.value;
 
-    const updatedRawConceptText = find(conceptCollection, { id: selectedId }).text;
+    const {
+      text: updatedConceptText,
+      description: updatedConceptDescription
+    } = find(conceptCollection, { id: selectedId });
 
-    setRawConceptMapText(updatedRawConceptText);
-    setRawConceptMapId(selectedId)
-    setRawConceptMapIdRenaming(selectedId)
+    setConceptMapText(updatedConceptText);
+    setConceptMapDescription(updatedConceptDescription);
+    setConceptMapId(selectedId)
+    setConceptMapIdRenaming(selectedId)
   }
 
   const handleClickEdit = () => {
@@ -87,24 +94,46 @@ const Home = ({
     setIsEditMode(false);
   }
 
-  const handleChangeRawConceptMapText = event => {
-    const updatedRawConceptText = event.target.value;
+  const handleChangeConceptMapText = event => {
+    const updatedConceptText = event.target.value;
     const updatedConceptCollection = conceptCollection.map(conceptMap => {
-      if (conceptMap.id === rawConceptMapId) {
+      if (conceptMap.id === conceptMapId) {
         return {
           ...conceptMap,
-          text: updatedRawConceptText
+          text: updatedConceptText
         }
       }
 
       return conceptMap;
     });
 
-    setRawConceptMapText(updatedRawConceptText);
+    setConceptMapText(updatedConceptText);
     setConceptCollection(updatedConceptCollection);
     setLocalData({
       ...localData,
-      rawConceptMapText,
+      conceptMapText: updatedConceptText,
+      conceptCollection: updatedConceptCollection
+    })
+  }
+
+  const handleChangeConceptMapDescription = event => {
+    const updatedConceptDescription = event.target.value;
+    const updatedConceptCollection = conceptCollection.map(conceptMap => {
+      if (conceptMap.id === conceptMapId) {
+        return {
+          ...conceptMap,
+          description: updatedConceptDescription
+        }
+      }
+
+      return conceptMap;
+    });
+
+    setConceptMapDescription(updatedConceptDescription);
+    setConceptCollection(updatedConceptCollection);
+    setLocalData({
+      ...localData,
+      conceptMapDescription: updatedConceptDescription,
       conceptCollection: updatedConceptCollection
     })
   }
@@ -116,28 +145,28 @@ const Home = ({
     }
 
     const { isValidId, error } = validateConceptMapId({
-      id: rawConceptMapIdRenaming,
-      currentId: rawConceptMapId,
+      id: conceptMapIdRenaming,
+      currentId: conceptMapId,
       conceptCollection
     });
 
     if (isValidId) {
       const updatedConceptCollection = conceptCollection.map(conceptMap => {
-        if (conceptMap.id === rawConceptMapId) {
+        if (conceptMap.id === conceptMapId) {
           return {
             ...conceptMap,
-            id: rawConceptMapIdRenaming
+            id: conceptMapIdRenaming
           }
         }
 
         return conceptMap;
       })
 
-      setRawConceptMapId(rawConceptMapIdRenaming);
+      setConceptMapId(conceptMapIdRenaming);
       setConceptCollection(updatedConceptCollection);
       setLocalData({
         ...localData,
-        rawConceptMapId: rawConceptMapIdRenaming,
+        conceptMapId: conceptMapIdRenaming,
         conceptCollection: updatedConceptCollection,
       });
 
@@ -146,11 +175,11 @@ const Home = ({
     }
 
     // TODO: Handle error messages
-    console.log({ error });
+    alert(error);
   }
 
   const handleChangeConceptMapId = event => {
-    setRawConceptMapIdRenaming(event.target.value);
+    setConceptMapIdRenaming(event.target.value);
   }
 
   const handleClickNewConceptMap = () => {
@@ -158,12 +187,13 @@ const Home = ({
     const updatedConceptCollection = [...conceptCollection, newConceptMap];
 
     setConceptCollection(updatedConceptCollection);
-    setRawConceptMapId(newConceptMap.id);
-    setRawConceptMapIdRenaming(newConceptMap.id);
-    setRawConceptMapText(newConceptMap.text);
+    setConceptMapId(newConceptMap.id);
+    setConceptMapIdRenaming(newConceptMap.id);
+    setConceptMapText(newConceptMap.text);
+    setConceptMapDescription(newConceptMap.description);
     setLocalData({
       ...localData,
-      rawConceptMapId: newConceptMap.id,
+      conceptMapId: newConceptMap.id,
       conceptCollection: updatedConceptCollection,
     });
   }
@@ -176,7 +206,7 @@ const Home = ({
     let deletionIndex = null;
 
     const updatedConceptCollection = conceptCollection.filter(({ id }, index) => {
-      if (id === rawConceptMapId) {
+      if (id === conceptMapId) {
         deletionIndex = index;
         return false
       }
@@ -193,22 +223,24 @@ const Home = ({
         const activeConceptMap = updatedConceptCollection[deletionIndex];
 
         setConceptCollection(updatedConceptCollection);
-        setRawConceptMapId(activeConceptMap.id);
-        setRawConceptMapIdRenaming(activeConceptMap.id);
-        setRawConceptMapText(activeConceptMap.text);
+        setConceptMapId(activeConceptMap.id);
+        setConceptMapIdRenaming(activeConceptMap.id);
+        setConceptMapText(activeConceptMap.text);
+        setConceptMapDescription(activeConceptMap.description);
         setLocalData({
           ...localData,
-          rawConceptMapId: activeConceptMap.id,
+          conceptMapId: activeConceptMap.id,
           conceptCollection: updatedConceptCollection,
         });
       } else {
         setConceptCollection(updatedConceptCollection);
-        setRawConceptMapId(null);
-        setRawConceptMapIdRenaming(null);
-        setRawConceptMapText(null);
+        setConceptMapId(null);
+        setConceptMapIdRenaming(null);
+        setConceptMapText(null);
+        setConceptMapDescription(null);
         setLocalData({
           ...localData,
-          rawConceptMapId: null,
+          conceptMapId: null,
           conceptCollection: updatedConceptCollection,
         });
       }
@@ -221,27 +253,60 @@ const Home = ({
     setIsDeleteMode(false);
   }
 
-  const handleClickSave = () => {
+  const handleClickSave = async () => {
     const db = firebase.firestore()
 
     const userCollectionsRef = db.collection('user_collections');
 
     setIsSaving(true);
 
-    userCollectionsRef.doc(user.uid).set({
-      owner: user.uid,
-      conceptCollection,
-      timestamp: (new Date()).getTime()
-    }).then(() => {
+    try {
+      await userCollectionsRef.doc(user.uid).set({
+        owner: user.uid,
+        conceptCollection,
+        timestamp: (new Date()).getTime()
+      })
+
       setIsSaving(false);
-    })
-    .catch((saveError) => {
-      console.log({ saveError });
-    })
+    } catch (error) {
+      // TODO: Handle error messages
+      setIsSaving(false);
+      alert(error);
+    }
   }
 
-  const handleClickPublishConceptMap = () => {
+  const handleClickPublish = async () => {
+    const db = firebase.firestore()
 
+    const publicCollectionsRef = db.collection('public_collections');
+
+    setIsPublishing(true);
+
+    try {
+      const snapshot = await publicCollectionsRef.doc(conceptMapId).get();
+
+      const isUpdateable = snapshot.exists && snapshot.data().owner === user.uid;
+      const isNotAuthorized = snapshot.exists && snapshot.data().owner !== user.uid
+      const isCreatable = !snapshot.exists;
+
+      if (isUpdateable || isCreatable) {
+        await publicCollectionsRef.doc(conceptMapId).set({
+          owner: user.uid,
+          conceptMapText,
+          conceptMapDescription: conceptMapDescription || '',
+          timestamp: (new Date()).getTime()
+        })
+      } else if (isNotAuthorized) {
+        // TODO: Handle error messages
+        console.log({ error: { message: 'This name is already in use.' }})
+      }
+
+      setIsPublishing(false);
+    } catch (error) {
+      // TODO: Handle error messages
+      alert(error);
+      setIsPublishing(false);
+    }
   }
 
   const handleLogin = loggedInUser => {
@@ -255,27 +320,30 @@ const Home = ({
 
         setLocalData({
           conceptCollection: updatedConceptCollection,
-          rawConceptMapText: updatedConceptCollection[0].text,
-          rawConceptMapId: updatedConceptCollection[0].id,
+          conceptMapText: updatedConceptCollection[0].text,
+          conceptMapDescription: updatedConceptCollection[0].description,
+          conceptMapId: updatedConceptCollection[0].id,
           results: [],
           issuesDuringGeneration: []
         });
 
         window.location.reload(false);
       })
-      .catch((error) => { console.log({ error }) })
+      .catch((error) => { alert(error) })
 
   }
 
   const handleLogout = () => {
     setConceptCollection(EXAMPLE_CONCEPTS);
-    setRawConceptMapId(null);
-    setRawConceptMapIdRenaming(null);
-    setRawConceptMapText(null);
+    setConceptMapId(null);
+    setConceptMapIdRenaming(null);
+    setConceptMapText(null);
+    setConceptMapDescription(null);
     setLocalData({
       conceptCollection: EXAMPLE_CONCEPTS,
-      rawConceptMapText: EXAMPLE_CONCEPTS[0].text,
-      rawConceptMapId: EXAMPLE_CONCEPTS[0].id,
+      conceptMapText: EXAMPLE_CONCEPTS[0].text,
+      conceptMapDescription: EXAMPLE_CONCEPTS[0].description,
+      conceptMapId: EXAMPLE_CONCEPTS[0].id,
       results: [],
       issuesDuringGeneration: []
     });
@@ -291,12 +359,12 @@ const Home = ({
       </div>
       {isEditMode ? (
         <div>
-          {rawConceptMapId && (
+          {conceptMapId && (
             <Fragment>
               {isRenameMode ? (
-                <input value={rawConceptMapIdRenaming} onChange={handleChangeConceptMapId} />
+                <input value={conceptMapIdRenaming} onChange={handleChangeConceptMapId} />
               ) : (
-                <select value={rawConceptMapId} onChange={handleSelectConceptMap}>
+                <select value={conceptMapId} onChange={handleSelectConceptMap}>
                   {conceptCollection.map(({ id }) => {
                     return (
                       <option key={id} value={id}>{id}</option>
@@ -306,7 +374,7 @@ const Home = ({
               )}
             </Fragment>
           )}
-          {rawConceptMapId && (
+          {conceptMapId && (
             <button className="m-2" onClick={handleClickRenameConceptMap}>
               {isRenameMode ? ('[Done]') : ('[Edit]')}
             </button>
@@ -319,24 +387,40 @@ const Home = ({
             </Fragment>
           ) : (
             <Fragment>
-              {rawConceptMapId && (<button className="m-2" onClick={handleClickDeleteConceptMap}>[Delete]</button>)}
+              {conceptMapId && (<button className="m-2" onClick={handleClickDeleteConceptMap}>[Delete]</button>)}
             </Fragment>
           )}
           <button className="m-2" onClick={handleClickNewConceptMap}>[New]</button>
-          {rawConceptMapId && isSaving ? (
-            <button className="m-2">[Saving...]</button>
-          ) : (
-            <button className="m-2" onClick={handleClickSave}>[Save]</button>
+          {isSignedIn && (
+            <Fragment>
+            {conceptMapId && isSaving ? (
+              <button className="m-2">[Saving...]</button>
+            ) : (
+              <button className="m-2" onClick={handleClickSave}>[Save]</button>
+            )}
+            {conceptMapId && isPublishing ? (
+              <button className="m-2">[Publishing...]</button>
+            ) : (
+              <button className="m-2" onClick={handleClickPublish}>[Publish]</button>
+            )}
+            </Fragment>
           )}
-          {rawConceptMapId && (<button className="m-2" onClick={handleClickPublishConceptMap}>[Publish]</button>)}
           <hr/>
-          {rawConceptMapText ? (
-            <textarea
-              className="m-4 p-4 border border-black w-1/2 h-96"
-              placeholder="Enter concepts"
-              onChange={handleChangeRawConceptMapText}
-              value={rawConceptMapText}
-            />
+          {conceptMapText ? (
+            <Fragment>
+              <textarea
+                className="m-4 p-4 border border-black w-1/2 h-96"
+                placeholder="Enter concepts"
+                onChange={handleChangeConceptMapText}
+                value={conceptMapText}
+              />
+              <textarea
+                className="m-4 p-4 border border-black w-1/2 h-96"
+                placeholder="Enter description"
+                onChange={handleChangeConceptMapDescription}
+                value={conceptMapDescription}
+              />
+            </Fragment>
           ) : (
             <div>Create a new concept map</div>
           )}
@@ -351,7 +435,7 @@ const Home = ({
         </div>
       ) : (
         <Fragment>
-          {rawConceptMapId ? (
+          {conceptMapId ? (
             <Fragment>
               <input type="number" min={1} max={20} value={count} onChange={handleChangeCount} />
               <button onClick={handleClickGenerateIdeas}>Generate</button>
