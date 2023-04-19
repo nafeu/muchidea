@@ -5,6 +5,8 @@ const Navigation = () => (
   <div className="app-logo">
     {/*<Link to="/"><img className="bee-icon" src="bee.svg" alt="muchidea icon"/></Link>*/}
     <Link to="/">Much Idea</Link>
+    <Link to="/edit">Edit</Link>
+    <Link to="/generate">Generate</Link>
   </div>
 )
 

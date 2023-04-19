@@ -2,18 +2,19 @@ import { useState, useEffect, Fragment } from 'react';
 import { withRouter, useParams } from 'react-router-dom';
 // import randomMaterialColor from 'random-material-color';
 // import Color from 'color';
-import { find } from 'lodash';
 
 import Auth from '../../auth';
+import Generate from '../../generate';
 
 import { generateIdeas } from '../../../services/idea';
 import { buildConcepts } from '../../../services/concept';
-import { DEFAULT_COUNT, EXAMPLE_CONCEPTS } from '../../../services/idea/constants';
+import { DEFAULT_COUNT } from '../../../services/idea/constants';
 
-const Home = ({
+const Shared = ({
   user,
   firebase,
   setIsLoading,
+  isLoading,
   isSignedIn
 }) => {
   const { id: conceptMapId } = useParams();
@@ -34,15 +35,20 @@ const Home = ({
 
     const publicCollectionsRef = db.collection('public_collections');
 
-    const snapshot = await publicCollectionsRef.doc(conceptMapId).get();
+    try {
+      const snapshot = await publicCollectionsRef.doc(conceptMapId).get();
 
-    const {
-      conceptMapText: updatedConceptMapText,
-      conceptMapDescription: updatedConceptMapDescription,
-    } = snapshot.data();
+      const {
+        conceptMapText: updatedConceptMapText,
+        conceptMapDescription: updatedConceptMapDescription,
+      } = snapshot.data();
 
-    setConceptMapText(updatedConceptMapText);
-    setConceptMapDescription(updatedConceptMapDescription);
+      setConceptMapText(updatedConceptMapText);
+      setConceptMapDescription(updatedConceptMapDescription);
+    } catch (error) {
+      // TODO: Handle error
+      console.log({ error });
+    }
   }
 
   const generateNewIdeas = () => {
@@ -73,27 +79,15 @@ const Home = ({
     <div>
       <Fragment>
         {conceptMapText ? (
-          <Fragment>
-            <input type="number" min={1} max={20} value={count} onChange={handleChangeCount} />
-            <div>{conceptMapDescription}</div>
-            <button onClick={handleClickGenerateIdeas}>Generate</button>
-            {results.length > 0 && (
-              <div className="text-center p-4">
-                <div className="font-bold">Results</div>
-                {results.map(idea => (
-                  <div key={idea}>{idea}</div>
-                ))}
-              </div>
-            )}
-            {issuesDuringGeneration.length > 0 && (
-              <div className="text-center p-4">
-                <div className="font-bold">Issues</div>
-                {issuesDuringGeneration.map(issue => (
-                  <div key={issue}>{issue}</div>
-                ))}
-              </div>
-            )}
-          </Fragment>
+          <Generate
+            conceptMapDescription={conceptMapDescription}
+            conceptMapId={conceptMapId}
+            count={count}
+            handleChangeCount={handleChangeCount}
+            handleClickGenerateIdeas={handleClickGenerateIdeas}
+            issuesDuringGeneration={issuesDuringGeneration}
+            results={results}
+          />
         ) : (
           <Fragment>
             {conceptMapId ? `Concept map not found for "${conceptMapId}".` : 'No concept map id in url.'}
@@ -113,4 +107,4 @@ const Home = ({
   )
 };
 
-export default withRouter(Home);
+export default withRouter(Shared);

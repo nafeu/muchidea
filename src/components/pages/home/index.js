@@ -1,10 +1,12 @@
-import { useState, useEffect, Fragment } from 'react';
-import { withRouter } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { withRouter, Switch, Route } from 'react-router-dom';
 // import randomMaterialColor from 'random-material-color';
 // import Color from 'color';
 import { find } from 'lodash';
 
 import Auth from '../../auth';
+import Edit from '../../edit';
+import Generate from '../../generate';
 
 import { generateIdeas } from '../../../services/idea';
 import { buildConcepts } from '../../../services/concept';
@@ -30,7 +32,6 @@ const Home = ({
   const [conceptMapIdRenaming, setConceptMapIdRenaming] = useState(localData.conceptMapId);
   const [conceptMapDescription, setConceptMapDescription] = useState(localData.conceptMapDescription);
 
-  const [isEditMode, setIsEditMode] = useState(false);
   const [isRenameMode, setIsRenameMode] = useState(false);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
 
@@ -84,14 +85,6 @@ const Home = ({
     setConceptMapDescription(updatedConceptDescription);
     setConceptMapId(selectedId)
     setConceptMapIdRenaming(selectedId)
-  }
-
-  const handleClickEdit = () => {
-    setIsEditMode(true);
-  }
-
-  const handleClickViewGenerator = () => {
-    setIsEditMode(false);
   }
 
   const handleChangeConceptMapText = event => {
@@ -355,117 +348,57 @@ const Home = ({
 
   return (
     <div>
-      <div>
-        {!isEditMode && (<button onClick={handleClickEdit}>Edit</button>)}
-        {isEditMode && (<button onClick={handleClickViewGenerator}>Generate</button>)}
-      </div>
-      {isEditMode ? (
-        <div>
-          {conceptMapId && (
-            <Fragment>
-              {isRenameMode ? (
-                <input value={conceptMapIdRenaming} onChange={handleChangeConceptMapId} />
-              ) : (
-                <select value={conceptMapId} onChange={handleSelectConceptMap}>
-                  {conceptCollection.map(({ id }) => {
-                    return (
-                      <option key={id} value={id}>{id}</option>
-                    )
-                  })}
-                </select>
-              )}
-            </Fragment>
-          )}
-          {conceptMapId && (
-            <button className="m-2" onClick={handleClickRenameConceptMap}>
-              {isRenameMode ? ('[Done]') : ('[Rename]')}
-            </button>
-          )}
-          {isDeleteMode ? (
-            <Fragment>
-              Are You Sure?
-              <button className="m-2" onClick={handleClickConfirmDelete}>[Yes]</button>
-              <button className="m-2" onClick={handleClickCancelDelete}>[No]</button>
-            </Fragment>
-          ) : (
-            <Fragment>
-              {conceptMapId && (<button className="m-2" onClick={handleClickDeleteConceptMap}>[Delete]</button>)}
-            </Fragment>
-          )}
-          <button className="m-2" onClick={handleClickNewConceptMap}>[New]</button>
-          {isSignedIn && (
-            <Fragment>
-            {conceptMapId && isSaving ? (
-              <button className="m-2">[Saving...]</button>
-            ) : (
-              <button className="m-2" onClick={handleClickSave}>[Save]</button>
-            )}
-            {conceptMapId && isPublishing ? (
-              <button className="m-2">[Publishing...]</button>
-            ) : (
-              <button className="m-2" onClick={handleClickPublish}>[Publish]</button>
-            )}
-            </Fragment>
-          )}
-          <hr/>
-          {conceptMapText ? (
-            <Fragment>
-              <textarea
-                className="m-4 p-4 border border-black w-1/2 h-96"
-                placeholder="Enter concepts"
-                onChange={handleChangeConceptMapText}
-                value={conceptMapText}
-              />
-              <textarea
-                className="m-4 p-4 border border-black w-1/2 h-96"
-                placeholder="Enter description"
-                onChange={handleChangeConceptMapDescription}
-                value={conceptMapDescription}
-              />
-            </Fragment>
-          ) : (
-            <div>Create a new concept map</div>
-          )}
-          <Auth
-            user={user}
-            firebase={firebase}
+      <Switch>
+        <Route path={`/edit`}>
+          <Edit
+            conceptCollection={conceptCollection}
+            conceptMapDescription={conceptMapDescription}
+            conceptMapId={conceptMapId}
+            conceptMapIdRenaming={conceptMapIdRenaming}
+            conceptMapText={conceptMapText}
+            isDeleteMode={isDeleteMode}
+            isPublishing={isPublishing}
+            isRenameMode={isRenameMode}
+            isSaving={isSaving}
             isSignedIn={isSignedIn}
-            setIsLoading={setIsLoading}
-            onLogin={handleLogin}
-            onLogout={handleLogout}
+            onCancelDelete={handleClickCancelDelete}
+            onChangeConceptMapDescription={handleChangeConceptMapDescription}
+            onChangeConceptMapId={handleChangeConceptMapId}
+            onChangeConceptMapText={handleChangeConceptMapText}
+            onClickCancelDelete={handleClickCancelDelete}
+            onClickConfirmDelete={handleClickConfirmDelete}
+            onClickNewConceptMap={handleClickNewConceptMap}
+            onClickPublish={handleClickPublish}
+            onClickRenameConceptMap={handleClickRenameConceptMap}
+            onClickSave={handleClickSave}
+            onConfirmDelete={handleClickConfirmDelete}
+            onDeleteConceptMap={handleClickDeleteConceptMap}
+            onSelectConceptMap={handleSelectConceptMap}
           />
-        </div>
-      ) : (
-        <Fragment>
-          {conceptMapId ? (
-            <Fragment>
-              <input type="number" min={1} max={20} value={count} onChange={handleChangeCount} />
-              <div>{conceptMapDescription}</div>
-              <button onClick={handleClickGenerateIdeas}>Generate</button>
-              {results.length > 0 && (
-                <div className="text-center p-4">
-                  <div className="font-bold">Results</div>
-                  {results.map(idea => (
-                    <div key={idea}>{idea}</div>
-                  ))}
-                </div>
-              )}
-              {issuesDuringGeneration.length > 0 && (
-                <div className="text-center p-4">
-                  <div className="font-bold">Issues</div>
-                  {issuesDuringGeneration.map(issue => (
-                    <div key={issue}>{issue}</div>
-                  ))}
-                </div>
-              )}
-            </Fragment>
-          ) : (
-            <Fragment>
-              Create a new concept map.
-            </Fragment>
-          )}
-        </Fragment>
-      )}
+        </Route>
+        <Route path={`/generate`}>
+          <Generate
+            conceptMapDescription={conceptMapDescription}
+            conceptMapId={conceptMapId}
+            count={count}
+            handleChangeCount={handleChangeCount}
+            handleClickGenerateIdeas={handleClickGenerateIdeas}
+            issuesDuringGeneration={issuesDuringGeneration}
+            results={results}
+          />
+        </Route>
+        <Route path="/">
+          <div>[INDEX] Info</div>
+        </Route>
+      </Switch>
+      <Auth
+        user={user}
+        firebase={firebase}
+        isSignedIn={isSignedIn}
+        setIsLoading={setIsLoading}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+      />
       <hr />
     </div>
   )
