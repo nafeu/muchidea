@@ -10,7 +10,7 @@ const Generate = ({
   results
 }) => {
   return (
-    <Fragment>
+    <div className="grow">
       {conceptMapId ? (
         <Fragment>
           <input type="number" min={1} max={20} value={count} onChange={handleChangeCount} />
@@ -38,7 +38,7 @@ const Generate = ({
           Create a new concept map.
         </Fragment>
       )}
-    </Fragment>
+    </div>
   )
 };
 

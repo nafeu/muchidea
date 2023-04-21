@@ -76,7 +76,7 @@ const Shared = ({
   const handleLogout = () => {}
 
   return (
-    <div>
+    <div className="flex flex-col grow">
       <Fragment>
         {conceptMapText ? (
           <Generate
@@ -102,7 +102,6 @@ const Shared = ({
           onLogout={handleLogout}
         />
       </Fragment>
-      <hr />
     </div>
   )
 };

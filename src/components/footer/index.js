@@ -1,9 +1,9 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 
-const Footer = ({ user, firebase }) => {
+const Footer = ({ user, firebase, className }) => {
   return (
-    <div className="page-footer">
+    <div className={`page-footer ${className}`}>
       <Credits />
     </div>
   );

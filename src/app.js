@@ -80,11 +80,11 @@ function App({ isSignedIn, user, config, firebase }) {
   }
 
   return (
-    <div className="app">
-      <div className="app-container">
+    <div className="app p-5 h-screen">
+      <div className="app-container h-full">
         <FirestoreProvider firebase={firebase} {...config}>
           <Router>
-            <div>
+            <div className="flex flex-col h-full justify-between">
               <Navigation />
               <Switch>
                 <Route path="/privacy-policy">
@@ -109,7 +109,7 @@ function App({ isSignedIn, user, config, firebase }) {
                   />
                 </Route>
               </Switch>
-              <Footer />
+              <Footer className="text-center"/>
             </div>
           </Router>
         </FirestoreProvider>

@@ -7,6 +7,7 @@ import { find } from 'lodash';
 import Auth from '../../auth';
 import Edit from '../../edit';
 import Generate from '../../generate';
+import Landing from '../../landing';
 
 import { generateIdeas } from '../../../services/idea';
 import { buildConcepts } from '../../../services/concept';
@@ -347,7 +348,7 @@ const Home = ({
   }
 
   return (
-    <div>
+    <div className="flex flex-col grow">
       <Switch>
         <Route path={`/edit`}>
           <Edit
@@ -388,7 +389,7 @@ const Home = ({
           />
         </Route>
         <Route path="/">
-          <div>[INDEX] Info</div>
+          <Landing />
         </Route>
       </Switch>
       <Auth
@@ -399,7 +400,6 @@ const Home = ({
         onLogin={handleLogin}
         onLogout={handleLogout}
       />
-      <hr />
     </div>
   )
 };

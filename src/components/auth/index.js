@@ -35,8 +35,8 @@ const Auth = ({
 
   if (isSignedIn) {
     return (
-      <div>
-        <div>Logged in as {user.email || 'Guest'}</div>
+      <div className="flex gap-2 justify-center">
+        <div>Logged in as {user.displayName?.split(' ')[0] || 'Guest'}</div>
         <button onClick={handleClickLogout}>Logout</button>
       </div>
     );
