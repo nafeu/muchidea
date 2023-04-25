@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
   CheckIcon,
+  CheckCircleIcon,
   ClipboardIcon,
   CloudArrowUpIcon,
   DocumentCheckIcon,
@@ -13,11 +14,14 @@ import {
   XMarkIcon
 } from '@heroicons/react/24/outline'
 
+import Preview from '../preview';
+
 const buttonClassName = `flex gap-1 border border-primary rounded-md px-2 py-1 hover:opacity-50`;
 const buttonDisabledClassName = `flex gap-1 border border-primary rounded-md px-2 py-1 opacity-50`;
 const selectClassName = `border bg-secondary border-primary rounded-md px-2 py-1.5`;
-const inputClassName = `border bg-primary border-primary rounded-md px-2 py-1`;
+const inputClassName = `border bg-primary text-secondary border-primary rounded-md px-2 py-1`;
 const iconClassName = `w-5 h-6`;
+const hiddenSmallScreenSpanClassName = 'hidden lg:block';
 
 const ONE_SECOND = 1000;
 
@@ -116,9 +120,15 @@ const Edit = ({
           <button className={buttonClassName} onClick={onClickRenameConceptMap}>
             {
               isRenameMode ? (
-                <Fragment><CheckIcon className={iconClassName} />Done</Fragment>
+                <Fragment>
+                  <CheckIcon className={iconClassName} />
+                  <span className={hiddenSmallScreenSpanClassName}>Done</span>
+                </Fragment>
               ) : (
-                <Fragment><PencilIcon className={iconClassName} />Rename</Fragment>
+                <Fragment>
+                  <PencilIcon className={iconClassName} />
+                  <span className={hiddenSmallScreenSpanClassName}>Rename</span>
+                </Fragment>
               )}
           </button>
         )}
@@ -137,37 +147,37 @@ const Edit = ({
             {conceptMapId && (
               <button className={buttonClassName} onClick={onDeleteConceptMap}>
                 <TrashIcon className={iconClassName}/>
-                Delete
+                <span className={hiddenSmallScreenSpanClassName}>Delete</span>
               </button>
             )}
           </Fragment>
         )}
         <button className={buttonClassName} onClick={handleClickNewConceptMap}>
           <PlusIcon className={iconClassName}/>
-          New
+          <span className={hiddenSmallScreenSpanClassName}>New</span>
         </button>
         {isSignedIn && (
           <Fragment>
           {conceptMapId && isSaving ? (
             <button className={buttonClassName}>
               <EllipsisHorizontalIcon className={iconClassName}/>
-              Saving
+              <span className={hiddenSmallScreenSpanClassName}>Saving</span>
             </button>
           ) : (
             <button className={buttonClassName} onClick={onClickSave}>
               <DocumentCheckIcon className={iconClassName}/>
-              Save
+              <span className={hiddenSmallScreenSpanClassName}>Save</span>
             </button>
           )}
           {conceptMapId && isPublishing ? (
             <button disabled className={buttonDisabledClassName}>
               <EllipsisHorizontalIcon className={iconClassName}/>
-              Publishing
+              <span className={hiddenSmallScreenSpanClassName}>Publishing</span>
             </button>
           ) : (
             <button className={buttonClassName} onClick={onClickPublish}>
               <CloudArrowUpIcon className={iconClassName}/>
-              Publish
+              <span className={hiddenSmallScreenSpanClassName}>Publish</span>
             </button>
           )}
           {conceptMapId && isPublished ? (
@@ -176,44 +186,52 @@ const Edit = ({
               onCopy={handleClickCopy}
             >
               <button className={buttonClassName}>
-                <ClipboardIcon className={iconClassName}/>
-                {isCopied ? 'Copied To Clipboard.' : 'Copy Share URL'}
+                {isCopied ? <CheckCircleIcon className={iconClassName}/> : <ClipboardIcon className={iconClassName}/>}
+
+                <span className={hiddenSmallScreenSpanClassName}>{isCopied ? 'Copied To Clipboard.' : 'Copy Public URL'}</span>
               </button>
             </CopyToClipboard>
           ) : (
             <button className={buttonDisabledClassName}>
               <ClipboardIcon className={iconClassName}/>
-              Copy Share URL
+              <span className={hiddenSmallScreenSpanClassName}>Copy Public URL</span>
             </button>
           )}
           {conceptMapId && isPublished ? (
             <a href={shareUrl} target="_blank" rel="noreferrer" className={buttonClassName}>
               <EyeIcon className={iconClassName}/>
-              Preview
+              <span className={hiddenSmallScreenSpanClassName}>View</span>
             </a>
           ) : (
             <button className={buttonDisabledClassName}>
               <EyeIcon className={iconClassName}/>
-              Preview
+              <span className={hiddenSmallScreenSpanClassName}>View</span>
             </button>
             )}
           </Fragment>
         )}
       </div>
       {conceptMapText ? (
-        <div className="flex gap-5 pt-3 grow">
-          <textarea
-            className="p-4 resize-none bg-secondary brightness-75 text-primary rounded-md w-1/2 scrollbar outline-0 grow"
-            placeholder="Enter concepts"
-            onChange={onChangeConceptMapText}
-            value={conceptMapText}
-          />
-          <textarea
-            className="p-4 resize-none bg-secondary brightness-75 text-primary rounded-md w-1/2 scrollbar outline-0"
-            placeholder="Enter description"
-            onChange={onChangeConceptMapDescription}
-            value={conceptMapDescription}
-          />
+        <div className="flex grow">
+          <div className="flex flex-col gap-3 pt-3 w-4/6">
+            <div className="text-sm font-bold text-center underline">Description</div>
+            <textarea
+              className="p-4 resize-none bg-secondary brightness-75 h-36 text-primary rounded-md scrollbar outline-0"
+              placeholder="Enter description (Markdown supported)"
+              onChange={onChangeConceptMapDescription}
+              value={conceptMapDescription}
+            />
+            <div className="text-sm font-bold text-center underline">Concept Map</div>
+            <textarea
+              className="p-4 resize-none bg-secondary brightness-75 text-primary rounded-md scrollbar outline-0 grow"
+              placeholder="Enter concepts"
+              onChange={onChangeConceptMapText}
+              value={conceptMapText}
+            />
+          </div>
+          <div className="pt-3 w-2/6">
+            <Preview conceptMapDescription={conceptMapDescription} />
+          </div>
         </div>
       ) : (
         <div>Create a new concept map</div>

@@ -5,10 +5,12 @@ module.exports = {
   ],
   theme: {
     colors: {
-      primary: '#EAD7D1',
-      secondary: '#1F1A38'
+      primary: '#d2dae2',
+      secondary: '#1e272e'
     },
     extend: {}
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography')
+  ],
 }
