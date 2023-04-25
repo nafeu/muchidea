@@ -271,6 +271,8 @@ const Home = ({
   }
 
   const handleClickPublish = async () => {
+    handleClickSave();
+
     const db = firebase.firestore()
 
     const publicCollectionsRef = db.collection('public_collections');
@@ -357,6 +359,7 @@ const Home = ({
             conceptMapId={conceptMapId}
             conceptMapIdRenaming={conceptMapIdRenaming}
             conceptMapText={conceptMapText}
+            firebase={firebase}
             isDeleteMode={isDeleteMode}
             isPublishing={isPublishing}
             isRenameMode={isRenameMode}
@@ -375,6 +378,7 @@ const Home = ({
             onConfirmDelete={handleClickConfirmDelete}
             onDeleteConceptMap={handleClickDeleteConceptMap}
             onSelectConceptMap={handleSelectConceptMap}
+            user={user}
           />
         </Route>
         <Route path={`/generate`}>
