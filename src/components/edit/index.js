@@ -6,12 +6,13 @@ import {
   PlusIcon,
   CloudArrowUpIcon,
   DocumentCheckIcon,
-  EllipsisHorizontalIcon
+  EllipsisHorizontalIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline'
 
-const buttonClassName = `flex gap-1 border border-slate-300 rounded-md px-2 py-1 hover:opacity-50`;
-const selectClassName = `border border-slate-300 rounded-md px-2 py-1.5`;
-const inputClassName = `border bg-slate-300 border-slate-300 rounded-md px-2 py-1`;
+const buttonClassName = `flex gap-1 border border-primary rounded-md px-2 py-1 hover:opacity-50`;
+const selectClassName = `border bg-secondary border-primary rounded-md px-2 py-1.5`;
+const inputClassName = `border bg-primary border-primary rounded-md px-2 py-1`;
 const iconClassName = `w-5 h-6`;
 
 const Edit = ({
@@ -39,7 +40,7 @@ const Edit = ({
   onDeleteConceptMap,
   onSelectConceptMap
 }) => (
-  <div className="grow">
+  <div className="flex grow flex-col pb-3">
     <div className="flex gap-3 mt-3">
       {conceptMapId && (
         <Fragment>
@@ -67,11 +68,15 @@ const Edit = ({
         </button>
       )}
       {isDeleteMode ? (
-        <Fragment>
-          Are You Sure?
-          <button className={buttonClassName} onClick={onConfirmDelete}>Yes</button>
-          <button className={buttonClassName} onClick={onCancelDelete}>No</button>
-        </Fragment>
+        <div className="flex gap-2 items-center">
+          <div className="font-bold">Are You Sure?</div>
+          <button className={buttonClassName} onClick={onConfirmDelete}>
+            <CheckIcon className={iconClassName} />
+          </button>
+          <button className={buttonClassName} onClick={onCancelDelete}>
+            <XMarkIcon className={iconClassName} />
+          </button>
+        </div>
       ) : (
         <Fragment>
           {conceptMapId && (
@@ -114,15 +119,15 @@ const Edit = ({
       )}
     </div>
     {conceptMapText ? (
-      <div className="flex gap-5 pt-3">
+      <div className="flex gap-5 pt-3 grow">
         <textarea
-          className="p-4 resize-none bg-slate-100 rounded-md w-1/2 h-96"
+          className="p-4 resize-none bg-secondary brightness-75 text-primary rounded-md w-1/2 scrollbar outline-0 grow"
           placeholder="Enter concepts"
           onChange={onChangeConceptMapText}
           value={conceptMapText}
         />
         <textarea
-          className="p-4 resize-none bg-slate-100 rounded-md w-1/2 h-96"
+          className="p-4 resize-none bg-secondary brightness-75 text-primary rounded-md w-1/2 scrollbar outline-0"
           placeholder="Enter description"
           onChange={onChangeConceptMapDescription}
           value={conceptMapDescription}

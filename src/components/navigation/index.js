@@ -3,12 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import { PencilSquareIcon, LightBulbIcon } from '@heroicons/react/24/outline'
 
 const selectedClassName = `
-  flex gap-1 py-2 px-2 bg-black text-white rounded-md hover:opacity-75
+  flex gap-1 py-2 px-2 bg-primary text-secondary rounded-md hover:opacity-75
 `
 
-const unselectedClassName = `
-  flex gap-1 py-2 px-2 bg-slate-100 text-black rounded-md hover:opacity-75
-`
+const unselectedClassName = `${selectedClassName} opacity-50`
 
 const Navigation = () => {
   const location = useLocation();

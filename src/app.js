@@ -80,7 +80,7 @@ function App({ isSignedIn, user, config, firebase }) {
   }
 
   return (
-    <div className="app p-5 h-screen">
+    <div className="app p-5 h-screen bg-secondary text-primary">
       <div className="app-container h-full">
         <FirestoreProvider firebase={firebase} {...config}>
           <Router>
