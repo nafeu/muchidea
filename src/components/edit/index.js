@@ -16,10 +16,10 @@ import {
 
 import Preview from '../preview';
 
-const buttonClassName = `flex gap-1 border border-primary rounded-md px-2 py-1 hover:opacity-50`;
-const buttonDisabledClassName = `flex gap-1 border border-primary rounded-md px-2 py-1 opacity-50`;
-const selectClassName = `border bg-secondary border-primary rounded-md px-2 py-1.5`;
-const inputClassName = `border bg-primary text-secondary border-primary rounded-md px-2 py-1`;
+const buttonClassName = `flex gap-1 text-primary bg-secondary brightness-75 rounded-md px-2 py-1 hover:opacity-50`;
+const buttonDisabledClassName = `flex gap-1 text-primary bg-secondary brightness-75 rounded-md px-2 py-1 opacity-25`;
+const selectClassName = `cursor-pointer text-primary bg-secondary brightness-75 rounded-md px-2 py-1.5`;
+const inputClassName = `text-secondary bg-primary brightness-75 rounded-md px-2 py-1`;
 const iconClassName = `w-5 h-6`;
 const hiddenSmallScreenSpanClassName = 'hidden lg:block';
 
@@ -213,15 +213,15 @@ const Edit = ({
       </div>
       {conceptMapText ? (
         <div className="flex grow">
-          <div className="flex flex-col gap-3 pt-3 w-4/6">
-            <div className="text-sm font-bold text-center underline">Description</div>
+          <div className="flex flex-col pt-3 w-4/6">
+            <div className="text-sm font-bold text-center underline text-secondary bg-primary rounded-t-md">Description</div>
             <textarea
-              className="p-4 resize-none bg-secondary brightness-75 h-36 text-primary rounded-md scrollbar outline-0"
+              className="p-4 resize-none bg-secondary brightness-75 h-36 text-primary rounded-md scrollbar outline-0 mb-3"
               placeholder="Enter description (Markdown supported)"
               onChange={onChangeConceptMapDescription}
               value={conceptMapDescription}
             />
-            <div className="text-sm font-bold text-center underline">Concept Map</div>
+            <div className="text-sm font-bold text-center underline text-secondary bg-primary rounded-t-md">Concept Map</div>
             <textarea
               className="p-4 resize-none bg-secondary brightness-75 text-primary rounded-md scrollbar outline-0 grow"
               placeholder="Enter concepts"
@@ -229,7 +229,7 @@ const Edit = ({
               value={conceptMapText}
             />
           </div>
-          <div className="pt-3 w-2/6">
+          <div className="flex flex-col pt-3 w-2/6">
             <Preview conceptMapDescription={conceptMapDescription} />
           </div>
         </div>

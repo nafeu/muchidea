@@ -16,9 +16,9 @@ const Navigation = () => {
   const showLinks = !location.pathname.includes('/shared/');
 
   return (
-    <div className="app-logo flex gap-3">
+    <div className="app-logo flex gap-3 items-center">
       {/*<Link to="/"><img className="bee-icon" src="bee.svg" alt="muchidea icon"/></Link>*/}
-      <Link className="py-2 pl-0" to="/">Much Idea</Link>
+      <Link className="py-2 pl-0 pr-2 text-4xl font-bold font-italic font-serif" to="/">Much Idea</Link>
       {showLinks && (
         <Fragment>
           <Link className={location.pathname === '/edit' ? selectedClassName : unselectedClassName} to="/edit">

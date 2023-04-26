@@ -19,31 +19,7 @@ import { EXAMPLE_CONCEPTS } from './services/idea/constants';
 
 function App({ isSignedIn, user, config, firebase }) {
   const [isLoading, setIsLoading] = useState(false);
-
   const [localData, setLocalData] = useState([]);
-
-  useEffect(() => {
-    const localData = JSON.parse(localStorage.getItem('muchidea-data'));
-
-    const isMissingLocalDataKeys = localData === null
-      || localData.conceptMapText === undefined
-      || localData.conceptMapId === undefined
-      || localData.results === undefined
-      || localData.issuesDuringGeneration === undefined
-      || localData.conceptCollection === undefined
-
-    if (localData && !isMissingLocalDataKeys) {
-      setLocalData(localData);
-    } else {
-      setLocalData({
-        conceptCollection: EXAMPLE_CONCEPTS,
-        conceptMapText: EXAMPLE_CONCEPTS[0].text,
-        conceptMapId: EXAMPLE_CONCEPTS[0].id,
-        results: [],
-        issuesDuringGeneration: []
-      });
-    }
-  }, []);
 
   useEffect(() => {
     if (user) {
@@ -58,12 +34,35 @@ function App({ isSignedIn, user, config, firebase }) {
           setLocalData({
             conceptCollection: conceptCollection,
             conceptMapText: conceptCollection[0].text,
+            conceptMapDescription: conceptCollection[0].description,
             conceptMapId: conceptCollection[0].id,
             results: [],
             issuesDuringGeneration: []
           });
         })
         .catch((error) => { console.log({ error }) })
+    } else {
+      const localData = JSON.parse(localStorage.getItem('muchidea-data'));
+
+      const isMissingLocalDataKeys = localData === null
+        || localData.conceptMapText === undefined
+        || localData.conceptMapId === undefined
+        || localData.results === undefined
+        || localData.issuesDuringGeneration === undefined
+        || localData.conceptCollection === undefined
+
+      if (localData && !isMissingLocalDataKeys) {
+        setLocalData(localData);
+      } else {
+        setLocalData({
+          conceptCollection: EXAMPLE_CONCEPTS,
+          conceptMapText: EXAMPLE_CONCEPTS[0].text,
+          conceptMapDescription: EXAMPLE_CONCEPTS[0].description,
+          conceptMapId: EXAMPLE_CONCEPTS[0].id,
+          results: [],
+          issuesDuringGeneration: []
+        });
+      }
     }
   }, [user])
 
