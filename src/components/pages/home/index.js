@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { withRouter, Switch, Route } from 'react-router-dom';
-// import randomMaterialColor from 'random-material-color';
-// import Color from 'color';
 import { find } from 'lodash';
 
 import Auth from '../../auth';
@@ -13,6 +11,11 @@ import { generateIdeas } from '../../../services/idea';
 import { buildConcepts } from '../../../services/concept';
 import { DEFAULT_COUNT, EXAMPLE_CONCEPTS } from '../../../services/idea/constants';
 import { validateConceptMapId, buildNewConceptMap } from './helpers';
+
+import {
+  MAX_RESULTS_COUNT,
+  MIN_RESULTS_COUNT
+} from './constants';
 
 const Home = ({
   user,
@@ -72,6 +75,28 @@ const Home = ({
     const { value: updatedCount } = event.target;
 
     setCount(updatedCount);
+  }
+
+  const handleBlurCount = event => {
+    const { value: updatedCount } = event.target;
+
+    const clampedCount = Math.min(
+      Math.max(
+        Number(updatedCount),
+        MIN_RESULTS_COUNT
+      ),
+      MAX_RESULTS_COUNT
+    );
+
+    setCount(clampedCount);
+  }
+
+  const handleIncrementCount = () => {
+    setCount(count => Math.min(Number(count) + 1, MAX_RESULTS_COUNT));
+  }
+
+  const handleDecrementCount = () => {
+    setCount(count => Math.max(Number(count) - 1, MIN_RESULTS_COUNT));
   }
 
   const handleSelectConceptMap = event => {
@@ -386,9 +411,12 @@ const Home = ({
             conceptMapDescription={conceptMapDescription}
             conceptMapId={conceptMapId}
             count={count}
-            handleChangeCount={handleChangeCount}
-            handleClickGenerateIdeas={handleClickGenerateIdeas}
             issuesDuringGeneration={issuesDuringGeneration}
+            onChangeCount={handleChangeCount}
+            onClickGenerateIdeas={handleClickGenerateIdeas}
+            onDecrementCount={handleDecrementCount}
+            onIncrementCount={handleIncrementCount}
+            onBlurCount={handleBlurCount}
             results={results}
           />
         </Route>
