@@ -8,7 +8,7 @@ import Generate from '../../generate';
 
 import { generateIdeas } from '../../../services/idea';
 import { buildConcepts } from '../../../services/concept';
-import { DEFAULT_COUNT } from '../../../services/idea/constants';
+import { DEFAULT_RESULTS_COUNT } from '../../../services/idea/constants';
 
 const Shared = ({
   user,
@@ -21,7 +21,7 @@ const Shared = ({
 
   const [results, setResults] = useState([]);
   const [issuesDuringGeneration, setIssuesDuringGeneration] = useState([]);
-  const [count, setCount] = useState(DEFAULT_COUNT);
+  const [count, setCount] = useState(DEFAULT_RESULTS_COUNT);
 
   const [conceptMapText, setConceptMapText] = useState(null);
   const [conceptMapDescription, setConceptMapDescription] = useState(null);
@@ -61,7 +61,7 @@ const Shared = ({
     setIssuesDuringGeneration(allIssues);
   }
 
-  const handleClickGenerateIdeas = () => {
+  const handleClickGenerateResults = () => {
     generateNewIdeas();
   }
 
@@ -84,7 +84,7 @@ const Shared = ({
             conceptMapId={conceptMapId}
             count={count}
             handleChangeCount={handleChangeCount}
-            handleClickGenerateIdeas={handleClickGenerateIdeas}
+            handleClickGenerateResults={handleClickGenerateResults}
             issuesDuringGeneration={issuesDuringGeneration}
             results={results}
           />

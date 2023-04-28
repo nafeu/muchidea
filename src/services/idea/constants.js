@@ -16,7 +16,8 @@ squares
 triangles
 `;
 
-export const DEFAULT_COUNT = 5;
+export const DEFAULT_RESULTS_COUNT = 5;
+export const DEFAULT_PICK_COUNT = 5;
 export const DEFAULT_ATTEMPT_LIMIT = 2000;
 export const DEFAULT_RECURSION_LIMIT = 2000;
 

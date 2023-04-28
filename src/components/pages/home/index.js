@@ -9,7 +9,7 @@ import Landing from '../../landing';
 
 import { generateIdeas } from '../../../services/idea';
 import { buildConcepts } from '../../../services/concept';
-import { DEFAULT_COUNT, EXAMPLE_CONCEPTS } from '../../../services/idea/constants';
+import { DEFAULT_RESULTS_COUNT, DEFAULT_PICK_COUNT, EXAMPLE_CONCEPTS } from '../../../services/idea/constants';
 import { validateConceptMapId, buildNewConceptMap } from './helpers';
 
 import {
@@ -27,7 +27,9 @@ const Home = ({
 }) => {
   const [results, setResults] = useState(localData.results);
   const [issuesDuringGeneration, setIssuesDuringGeneration] = useState(localData.issuesDuringGeneration);
-  const [count, setCount] = useState(DEFAULT_COUNT);
+
+  const [resultsCount, setResultsCount] = useState(DEFAULT_RESULTS_COUNT);
+  const [pickCount, setPickCount] = useState(DEFAULT_PICK_COUNT);
 
   const [conceptCollection, setConceptCollection] = useState(localData.conceptCollection);
 
@@ -42,6 +44,9 @@ const Home = ({
   const [isSaving, setIsSaving] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
 
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isPicking, setIsPicking] = useState(false);
+
   useEffect(() => {
     if (results === []) {
       generateNewIdeas();
@@ -49,8 +54,10 @@ const Home = ({
   }, [])
 
   const generateNewIdeas = () => {
+    setIsGenerating(true);
+
     const { issues: issuesBuildingConcepts, concepts, root } = buildConcepts(conceptMapText);
-    const { issues: issuesGeneratingIdeas, ideas }  = generateIdeas({ concepts, root, count });
+    const { issues: issuesGeneratingIdeas, ideas }  = generateIdeas({ concepts, root, count: resultsCount });
 
     const allIssues = [...issuesBuildingConcepts, ...issuesGeneratingIdeas];
 
@@ -67,17 +74,23 @@ const Home = ({
     });
   }
 
-  const handleClickGenerateIdeas = () => {
+  const handleClickGenerateResults = () => {
     generateNewIdeas();
   }
 
-  const handleChangeCount = event => {
+  const handleChangeResultsCount = event => {
     const { value: updatedCount } = event.target;
 
-    setCount(updatedCount);
+    setResultsCount(updatedCount);
   }
 
-  const handleBlurCount = event => {
+  const handleChangePickCount = event => {
+    const { value: updatedCount } = event.target;
+
+    setPickCount(updatedCount);
+  }
+
+  const handleBlurResultsCount = event => {
     const { value: updatedCount } = event.target;
 
     const clampedCount = Math.min(
@@ -88,15 +101,37 @@ const Home = ({
       MAX_RESULTS_COUNT
     );
 
-    setCount(clampedCount);
+    setResultsCount(clampedCount);
   }
 
-  const handleIncrementCount = () => {
-    setCount(count => Math.min(Number(count) + 1, MAX_RESULTS_COUNT));
+  const handleBlurPickCount = event => {
+    const { value: updatedCount } = event.target;
+
+    const clampedCount = Math.min(
+      Math.max(
+        Number(updatedCount),
+        resultsCount
+      ),
+      MAX_RESULTS_COUNT
+    );
+
+    setPickCount(clampedCount);
   }
 
-  const handleDecrementCount = () => {
-    setCount(count => Math.max(Number(count) - 1, MIN_RESULTS_COUNT));
+  const handleIncrementResultsCount = () => {
+    setResultsCount(count => Math.min(Number(count) + 1, MAX_RESULTS_COUNT));
+  }
+
+  const handleDecrementResultsCount = () => {
+    setResultsCount(count => Math.max(Number(count) - 1, MIN_RESULTS_COUNT));
+  }
+
+  const handleIncrementPickCount = () => {
+    setPickCount(count => Math.min(Number(count) + 1, resultsCount));
+  }
+
+  const handleDecrementPickCount = () => {
+    setPickCount(count => Math.max(Number(count) - 1, MIN_RESULTS_COUNT));
   }
 
   const handleSelectConceptMap = event => {
@@ -375,7 +410,7 @@ const Home = ({
   }
 
   return (
-    <div className="flex flex-col grow">
+    <div className="flex flex-col grow overflow-hidden">
       <Switch>
         <Route path={`/edit`}>
           <Edit
@@ -410,14 +445,23 @@ const Home = ({
           <Generate
             conceptMapDescription={conceptMapDescription}
             conceptMapId={conceptMapId}
-            count={count}
+            generatedResults={results}
+            isGenerating={isGenerating}
+            isPicking={isPicking}
             issuesDuringGeneration={issuesDuringGeneration}
-            onChangeCount={handleChangeCount}
-            onClickGenerateIdeas={handleClickGenerateIdeas}
-            onDecrementCount={handleDecrementCount}
-            onIncrementCount={handleIncrementCount}
-            onBlurCount={handleBlurCount}
-            results={results}
+            onBlurResultsCount={handleBlurResultsCount}
+            onBlurPickCount={handleBlurPickCount}
+            onChangeResultsCount={handleChangeResultsCount}
+            onChangePickCount={handleChangePickCount}
+            onClickGenerateResults={handleClickGenerateResults}
+            onDecrementResultsCount={handleDecrementResultsCount}
+            onIncrementResultsCount={handleIncrementResultsCount}
+            onDecrementPickCount={handleDecrementPickCount}
+            onIncrementPickCount={handleIncrementPickCount}
+            pickCount={pickCount}
+            resultsCount={resultsCount}
+            setIsGenerating={setIsGenerating}
+            setIsPicking={setIsPicking}
           />
         </Route>
         <Route path="/">
