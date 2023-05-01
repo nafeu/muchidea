@@ -17,8 +17,7 @@ const Navigation = () => {
 
   return (
     <div className="app-logo flex gap-3 items-center">
-      {/*<Link to="/"><img className="bee-icon" src="bee.svg" alt="muchidea icon"/></Link>*/}
-      <Link className="py-2 pl-0 pr-2 text-4xl font-bold font-italic font-serif" to="/">Much Idea</Link>
+      <Link className="flex items-center justify-center gap-2 py-2 pl-0 pr-2 text-4xl font-bold font-italic font-serif hover:brightness-150 transition-[filter]" to="/"><img className="w-14 h-14 mb-1 stroke-primary" src="lightbulb.svg" alt="muchidea icon"/> Much Idea</Link>
       {showLinks && (
         <Fragment>
           <Link className={location.pathname === '/edit' ? selectedClassName : unselectedClassName} to="/edit">

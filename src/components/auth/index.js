@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { ScaleLoader } from "react-spinners"
 
 const Auth = ({
   user,
@@ -30,7 +29,7 @@ const Auth = ({
   }
 
   if (isLoggingIn) {
-    return <ScaleLoader size={20} margin={5} />
+    return 'Logging in...'
   }
 
   if (isSignedIn) {

@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 import "firebase/auth";
 import { FirestoreProvider } from "@react-firebase/firestore";
-import { ScaleLoader } from "react-spinners"
 
 import Navigation from "./components/navigation";
 import Footer from "./components/footer";
@@ -73,7 +72,7 @@ function App({ isSignedIn, user, config, firebase }) {
   if (isLoading || localData.conceptMapText === undefined || localData.conceptMapId === undefined) {
     return (
       <div className="app-loading">
-        <ScaleLoader size={20} margin={5} color="#ffc048" />
+        Loading...
       </div>
     );
   }
