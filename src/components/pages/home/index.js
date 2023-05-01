@@ -45,7 +45,9 @@ const Home = ({
   const [isPublishing, setIsPublishing] = useState(false);
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingFinished, setIsGeneratingFinished] = useState(false);
   const [isPicking, setIsPicking] = useState(false);
+  const [isPickingFinished, setIsPickingFinished] = useState(false);
 
   useEffect(() => {
     if (results === []) {
@@ -64,6 +66,10 @@ const Home = ({
     setResults(ideas);
     setIssuesDuringGeneration(allIssues);
 
+    if (allIssues.length > 0) {
+      setIsGenerating(false);
+    }
+
     setLocalData({
       conceptCollection,
       conceptMapDescription,
@@ -76,6 +82,10 @@ const Home = ({
 
   const handleClickGenerateResults = () => {
     generateNewIdeas();
+  }
+
+  const handleClickPickResults = () => {
+    setIsPicking(true);
   }
 
   const handleChangeResultsCount = event => {
@@ -132,6 +142,14 @@ const Home = ({
 
   const handleDecrementPickCount = () => {
     setPickCount(count => Math.max(Number(count) - 1, MIN_RESULTS_COUNT));
+  }
+
+  const handleClickReset = () => {
+    setResults([]);
+    setIsGenerating(false);
+    setIsGeneratingFinished(false);
+    setIsPicking(false);
+    setIsPickingFinished(false);
   }
 
   const handleSelectConceptMap = event => {
@@ -447,13 +465,17 @@ const Home = ({
             conceptMapId={conceptMapId}
             generatedResults={results}
             isGenerating={isGenerating}
+            isGeneratingFinished={isGeneratingFinished}
             isPicking={isPicking}
+            isPickingFinished={isPickingFinished}
             issuesDuringGeneration={issuesDuringGeneration}
             onBlurResultsCount={handleBlurResultsCount}
             onBlurPickCount={handleBlurPickCount}
             onChangeResultsCount={handleChangeResultsCount}
             onChangePickCount={handleChangePickCount}
             onClickGenerateResults={handleClickGenerateResults}
+            onClickPickResults={handleClickPickResults}
+            onClickReset={handleClickReset}
             onDecrementResultsCount={handleDecrementResultsCount}
             onIncrementResultsCount={handleIncrementResultsCount}
             onDecrementPickCount={handleDecrementPickCount}
@@ -461,7 +483,10 @@ const Home = ({
             pickCount={pickCount}
             resultsCount={resultsCount}
             setIsGenerating={setIsGenerating}
+            setIsGeneratingFinished={setIsGeneratingFinished}
             setIsPicking={setIsPicking}
+            setIsPickingFinished={setIsPickingFinished}
+            setPickCount={setPickCount}
           />
         </Route>
         <Route path="/">

@@ -44,7 +44,8 @@ export const generateIdeas = ({
     recursionCount += 1;
 
     if (recursionCount >= recursionLimit) {
-      issues.push(`Reached recursion limit (${recursionLimit}) generating results`)
+      console.log(`Reached recursion limit of ${recursionLimit}`);
+      issues.push(`To generate that many results, please expand the amount of unique combinations made possible in your concept map.`);
       return inputString;
     }
 
@@ -86,7 +87,8 @@ export const generateIdeas = ({
   }
 
   if (attemptCount === attemptLimit) {
-    issues.push(`Reached limit of attempts (${attemptLimit}) to create unique results.`)
+    console.log(`Reached limit of attempts (${attemptLimit}) to create unique results.`)
+    issues.push(`To generate that many results, please expand the amount of unique combinations made possible in your concept map.`)
   }
 
   issues = uniq(issues) || [];
