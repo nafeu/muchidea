@@ -94,6 +94,8 @@ function App({ isSignedIn, user, config, firebase }) {
                     isSignedIn={isSignedIn}
                     user={user}
                     setIsLoading={setIsLoading}
+                    setLocalData={setLocalData}
+                    localData={localData}
                   />
                 </Route>
                 <Route path="/">

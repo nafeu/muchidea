@@ -26,8 +26,6 @@ export const getRandomNumbersInRangeSequence = ({ max, amount, sequenceLength })
     uniqueAttempts += 1;
   }
 
-  console.log(JSON.stringify(sequences));
-
   return sequences;
 }
 
@@ -43,4 +41,8 @@ function areArraysEqual(arr1, arr2) {
   }
 
   return true;
+}
+
+export const getRandomInt = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }

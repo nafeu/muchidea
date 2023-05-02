@@ -120,9 +120,9 @@ const Home = ({
     const clampedCount = Math.min(
       Math.max(
         Number(updatedCount),
-        resultsCount
+        MIN_RESULTS_COUNT
       ),
-      MAX_RESULTS_COUNT
+      resultsCount - 1
     );
 
     setPickCount(clampedCount);
@@ -137,7 +137,7 @@ const Home = ({
   }
 
   const handleIncrementPickCount = () => {
-    setPickCount(count => Math.min(Number(count) + 1, resultsCount));
+    setPickCount(count => Math.min(Number(count) + 1, resultsCount - 1));
   }
 
   const handleDecrementPickCount = () => {
@@ -251,7 +251,13 @@ const Home = ({
   }
 
   const handleChangeConceptMapId = event => {
-    setConceptMapIdRenaming(event.target.value);
+    const { value } = event.target;
+    const newValue = value
+      .replace(/\s+/g, "-")
+      .replace(/[^a-zA-Z0-9 \-_\.]/g, "")
+      .toLowerCase();
+
+    setConceptMapIdRenaming(newValue);
   }
 
   const handleClickNewConceptMap = () => {
@@ -410,19 +416,34 @@ const Home = ({
   }
 
   const handleLogout = () => {
-    setConceptCollection(EXAMPLE_CONCEPTS);
     setConceptMapId(null);
     setConceptMapIdRenaming(null);
     setConceptMapText(null);
     setConceptMapDescription(null);
-    setLocalData({
-      conceptCollection: EXAMPLE_CONCEPTS,
-      conceptMapText: EXAMPLE_CONCEPTS[0].text,
-      conceptMapDescription: EXAMPLE_CONCEPTS[0].description,
-      conceptMapId: EXAMPLE_CONCEPTS[0].id,
-      results: [],
-      issuesDuringGeneration: []
-    });
+
+    const localData = JSON.parse(localStorage.getItem('muchidea-data'));
+
+    const isMissingLocalDataKeys = localData === null
+      || localData.conceptMapText === undefined
+      || localData.conceptMapId === undefined
+      || localData.results === undefined
+      || localData.issuesDuringGeneration === undefined
+      || localData.conceptCollection === undefined
+
+    if (localData && !isMissingLocalDataKeys) {
+      setConceptCollection(localData.conceptCollection);
+      setLocalData(localData);
+    } else {
+      setConceptCollection(EXAMPLE_CONCEPTS);
+      setLocalData({
+        conceptCollection: EXAMPLE_CONCEPTS,
+        conceptMapText: EXAMPLE_CONCEPTS[0].text,
+        conceptMapDescription: EXAMPLE_CONCEPTS[0].description,
+        conceptMapId: EXAMPLE_CONCEPTS[0].id,
+        results: [],
+        issuesDuringGeneration: []
+      });
+    }
 
     window.location.reload(false);
   }
@@ -461,6 +482,7 @@ const Home = ({
         </Route>
         <Route path={`/generate`}>
           <Generate
+            conceptCollection={conceptCollection}
             conceptMapDescription={conceptMapDescription}
             conceptMapId={conceptMapId}
             generatedResults={results}
@@ -469,17 +491,18 @@ const Home = ({
             isPicking={isPicking}
             isPickingFinished={isPickingFinished}
             issuesDuringGeneration={issuesDuringGeneration}
-            onBlurResultsCount={handleBlurResultsCount}
             onBlurPickCount={handleBlurPickCount}
-            onChangeResultsCount={handleChangeResultsCount}
+            onBlurResultsCount={handleBlurResultsCount}
             onChangePickCount={handleChangePickCount}
+            onChangeResultsCount={handleChangeResultsCount}
             onClickGenerateResults={handleClickGenerateResults}
             onClickPickResults={handleClickPickResults}
             onClickReset={handleClickReset}
-            onDecrementResultsCount={handleDecrementResultsCount}
-            onIncrementResultsCount={handleIncrementResultsCount}
             onDecrementPickCount={handleDecrementPickCount}
+            onDecrementResultsCount={handleDecrementResultsCount}
             onIncrementPickCount={handleIncrementPickCount}
+            onIncrementResultsCount={handleIncrementResultsCount}
+            onSelectConceptMap={handleSelectConceptMap}
             pickCount={pickCount}
             resultsCount={resultsCount}
             setIsGenerating={setIsGenerating}

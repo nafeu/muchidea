@@ -20,6 +20,7 @@ import Results from '../results';
 const iconButtonClassName = `w-6 h-6 text-secondary bg-primary rounded-full hover:opacity-50 active:opacity-25 cursor-pointer`;
 
 const Generate = ({
+  conceptCollection,
   conceptMapDescription,
   conceptMapId,
   generatedResults,
@@ -28,17 +29,18 @@ const Generate = ({
   isPicking,
   isPickingFinished,
   issuesDuringGeneration,
-  onBlurResultsCount,
   onBlurPickCount,
+  onBlurResultsCount,
   onChangePickCount,
   onChangeResultsCount,
   onClickGenerateResults,
   onClickPickResults,
+  onClickReset,
   onDecrementPickCount,
   onDecrementResultsCount,
   onIncrementPickCount,
   onIncrementResultsCount,
-  onClickReset,
+  onSelectConceptMap,
   pickCount,
   resultsCount,
   setIsGenerating,
@@ -96,7 +98,18 @@ const Generate = ({
     <div className="grow bg-secondary brightness-75 rounded-md p-3 my-2 overflow-hidden">
       {conceptMapId ? (
         <div className="flex grow h-full overflow-hidden">
-          <div className="flex flex-col items-center gap-1 justify-center w-4/6 overflow-hidden">
+          <div className={`flex flex-col items-center gap-1 w-4/6 overflow-hidden ${conceptCollection ? '' : 'justify-center'}`}>
+            {conceptCollection && (
+              <div className="w-full mb-8">
+                <select className="rounded-md bg-secondary brightness-75 py-1 px-1" disabled={(isGenerating || isPicking)} value={conceptMapId} onChange={onSelectConceptMap}>
+                  {conceptCollection.map(({ id }) => {
+                    return (
+                      <option key={id} value={id}>{id}</option>
+                    )
+                  })}
+                </select>
+              </div>
+            )}
             <div className="flex items-center justify-center p-4">
               {promptTextPropsTransition((style, promptText) => (
                 <animated.div

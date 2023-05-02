@@ -1,28 +1,29 @@
 import React, { Fragment, useState, useCallback, useRef, useEffect } from "react";
 import { useTransition, animated } from "@react-spring/web"
-import { getRandomNumbersInRangeSequence } from "../../utils/helpers";
+import { getRandomNumbersInRangeSequence, getRandomInt } from "../../utils/helpers";
 
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 const RESULT_COUNT_STYLES_TEXT_2XL = 2;
 const RESULT_COUNT_STYLES_TEXT_XL = 6;
 const RESULT_COUNT_STYLES_TEXT_MD = 10;
-const ANIMATION_SPEED_MS = 200;
-const PICKING_ANIMATION_SEQUENGE_LENGTH = 6;
+const ANIMATION_SPEED_MS = 500;
+const PICKING_RANDOMIZATION_COUNT_MIN = 12;
+const PICKING_RANDOMIZATION_COUNT_MAX = 5;
 
 const iconClassName = `w-8 h-8`;
 
 const getResultStylesByLength = length => {
   if (length < RESULT_COUNT_STYLES_TEXT_2XL) {
-    return `text-2xl py-2 px-2 my-1`;
+    return `text-2xl py-2 pb-2 mb-1`;
   }
 
   if (length < RESULT_COUNT_STYLES_TEXT_XL) {
-    return `text-xl py-2 px-2 my-1`;
+    return `text-xl py-2 pb-2 mb-1`;
   }
 
   if (length < RESULT_COUNT_STYLES_TEXT_MD) {
-    return `text-md py-1 px-2 my-1`
+    return `text-md py-1 pb-2 mb-1`
   }
 
   return `text-sm py-1 px-2 my-1`
@@ -105,7 +106,7 @@ const Results = ({
     const randomNumberSequence = getRandomNumbersInRangeSequence({
       max: results.length - 1,
       amount: pickCount,
-      sequenceLength: PICKING_ANIMATION_SEQUENGE_LENGTH
+      sequenceLength: getRandomInt(PICKING_RANDOMIZATION_COUNT_MIN, PICKING_RANDOMIZATION_COUNT_MAX)
     });
 
     const pickedResultsSequence = randomNumberSequence.map(randomNumbers => {
