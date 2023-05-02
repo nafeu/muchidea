@@ -34,6 +34,14 @@ const Shared = ({
   const [isPicking, setIsPicking] = useState(false);
   const [isPickingFinished, setIsPickingFinished] = useState(false);
 
+  useEffect(() => {
+    if (conceptMapId) {
+      document.title = `Much Idea | ${conceptMapId}`;
+    } else {
+      document.title = `Much Idea`;
+    }
+  }, [conceptMapId])
+
   const loadConceptMap = async () => {
     const db = firebase.firestore()
 

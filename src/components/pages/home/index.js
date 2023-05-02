@@ -50,6 +50,14 @@ const Home = ({
   const [isPickingFinished, setIsPickingFinished] = useState(false);
 
   useEffect(() => {
+    if (conceptMapId) {
+      document.title = `Much Idea | ${conceptMapId}`;
+    } else {
+      document.title = `Much Idea`;
+    }
+  }, [conceptMapId])
+
+  useEffect(() => {
     if (results === []) {
       generateNewIdeas();
     }
