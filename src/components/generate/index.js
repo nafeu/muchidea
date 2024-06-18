@@ -95,13 +95,13 @@ const Generate = ({
   const showFinishedPrompt = isGeneratingFinished && isPickingFinished;
 
   return (
-    <div className="grow bg-secondary brightness-75 rounded-md p-3 my-2 overflow-hidden">
+    <div className="grow bg-secondary font-mono p-4 overflow-hidden">
       {conceptMapId ? (
         <div className="flex grow h-full overflow-hidden">
           <div className={`flex flex-col items-center gap-1 w-4/6 overflow-hidden ${conceptCollection ? '' : 'justify-center'}`}>
             {conceptCollection && (
-              <div className="w-full mb-8">
-                <select className="rounded-md bg-secondary brightness-75 py-1 px-1" disabled={(isGenerating || isPicking)} value={conceptMapId} onChange={onSelectConceptMap}>
+              <div className="w-full mb-4">
+                <select className=" bg-secondary py-1 px-1" disabled={(isGenerating || isPicking)} value={conceptMapId} onChange={onSelectConceptMap}>
                   {conceptCollection.map(({ id }) => {
                     return (
                       <option key={id} value={id}>{id}</option>
@@ -110,11 +110,11 @@ const Generate = ({
                 </select>
               </div>
             )}
-            <div className="flex items-center justify-center p-4">
+            <div className="flex items-center justify-center py-8">
               {promptTextPropsTransition((style, promptText) => (
                 <animated.div
                   style={style}
-                  className="text-3xl font-thin max-h-14 absolute"
+                  className="text-3xl font-thin max-h-14 absolute text-center"
                 >
                   {promptText}
                 </animated.div>
@@ -122,10 +122,10 @@ const Generate = ({
             </div>
             {showGeneratePrompt && (
               <Fragment>
-                <div className="select-none w-full flex items-center justify-center text-2xl gap-2 py-1 mb-1">
+                <div className="select-none w-full flex items-center justify-center text-2xl gap-2 py-1 mt-4 mb-1">
                   <MinusIcon className={iconButtonClassName} onClick={onDecrementResultsCount} />
                   <input
-                    className="text-center bg-secondary border-primary border rounded-md w-1/6"
+                    className="text-center bg-secondary border-primary border w-1/6"
                     type="number"
                     min={MIN_RESULTS_COUNT}
                     max={MAX_RESULTS_COUNT}
@@ -135,7 +135,7 @@ const Generate = ({
                   />
                   <PlusIcon className={iconButtonClassName} onClick={onIncrementResultsCount} />
                 </div>
-                <button className="select-none text-xl font-bold text-secondary bg-primary w-1/4 rounded-md h-10 active:brightness-75 hover:brightness-125 transition-[filter]" onClick={onClickGenerateResults}>
+                <button className="select-none text-xl font-bold text-secondary bg-primary w-1/4  h-10 active:hover:brightness-125 transition-[filter]" onClick={onClickGenerateResults}>
                   {isGenerating ? (
                     <div className="flex items-center justify-center">
                       <svg className="animate-spin h-6 w-6 mr-2 fill-secondary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -158,7 +158,7 @@ const Generate = ({
                 <div className="select-none w-full flex items-center justify-center text-2xl gap-2 py-1 mb-1">
                   <MinusIcon className={iconButtonClassName} onClick={onDecrementPickCount} />
                   <input
-                    className="text-center bg-secondary border-primary border rounded-md w-1/6"
+                    className="text-center bg-secondary border-primary border w-1/6"
                     type="number"
                     min={MIN_PICK_COUNT}
                     max={resultsCount}
@@ -168,7 +168,7 @@ const Generate = ({
                   />
                   <PlusIcon className={iconButtonClassName} onClick={onIncrementPickCount} />
                 </div>
-                <button className="select-none text-xl font-bold text-secondary bg-primary w-1/4 rounded-md h-10 active:brightness-75 hover:brightness-125 transition-[filter]" onClick={onClickPickResults}>
+                <button className="select-none text-xl font-bold text-secondary bg-primary w-1/4  h-10 active:hover:brightness-125 transition-[filter]" onClick={onClickPickResults}>
                   {isPicking ? (
                     <div className="flex items-center justify-center">
                       <svg className="animate-spin h-6 w-6 mr-2 fill-secondary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -191,7 +191,7 @@ const Generate = ({
                 <div className="select-none w-full flex items-center justify-center text-2xl gap-2 py-1 mb-1 opacity-25">
                   <MinusIcon className={iconButtonClassName} onClick={() => {}} />
                   <input
-                    className="text-center bg-secondary border-primary border rounded-md w-1/6"
+                    className="text-center bg-secondary border-primary border  w-1/6"
                     type="number"
                     min={MIN_RESULTS_COUNT}
                     max={MAX_RESULTS_COUNT}
@@ -202,7 +202,7 @@ const Generate = ({
                   />
                   <PlusIcon className={iconButtonClassName} onClick={() => {}} />
                 </div>
-                <button className="select-none text-xl font-bold text-secondary bg-primary w-1/4 rounded-md h-10 active:brightness-75 hover:brightness-125 transition-[filter]" onClick={handleClickReset}>
+                <button className="select-none text-xl font-bold text-secondary bg-primary w-1/4  h-10 active:hover:brightness-125 transition-[filter]" onClick={handleClickReset}>
                   <div className="flex items-center justify-center">
                     <svg className="h-6 w-6 mr-2 fill-secondary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
                       <path d="M290.7 57.4L57.4 290.7c-25 25-25 65.5 0 90.5l80 80c12 12 28.3 18.7 45.3 18.7H288h9.4H512c17.7 0 32-14.3 32-32s-14.3-32-32-32H387.9L518.6 285.3c25-25 25-65.5 0-90.5L381.3 57.4c-25-25-65.5-25-90.5 0zM297.4 416H288l-105.4 0-80-80L227.3 211.3 364.7 348.7 297.4 416z"/>

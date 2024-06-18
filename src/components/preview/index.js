@@ -4,9 +4,9 @@ import remarkGfm from 'remark-gfm'
 
 const Preview = ({ conceptMapDescription }) => {
   return (
-    <div className="flex flex-col grow pl-3">
-      <div className="text-sm font-bold text-center underline text-secondary bg-primary rounded-t-md">Preview</div>
-      <div className="brightness-75 grow prose prose-invert p-5 rounded-md bg-secondary">
+    <div className="flex flex-col pl-3 font-mono ">
+      <div className="text-sm font-bold text-center py-1 text-secondary bg-primary">description preview</div>
+      <div className="grow prose prose-invert p-5 bg-secondary border-b-2 border-primary">
         <ReactMarkdown children={conceptMapDescription} remarkPlugins={[remarkGfm]} />
       </div>
     </div>

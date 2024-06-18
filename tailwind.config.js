@@ -5,8 +5,11 @@ module.exports = {
   ],
   theme: {
     colors: {
-      primary: '#d2dae2',
-      secondary: '#1e272e'
+      primary: '#F8F4E3',
+      secondary: '#2A2B2A',
+      tertiary: '#FF8966',
+      quaternary: '#E5446D',
+      quinary: '#706C61'
     },
     extend: {}
   },

@@ -1,13 +1,13 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { PencilSquareIcon, LightBulbIcon } from '@heroicons/react/24/outline'
 
 const selectedClassName = `
-  flex gap-1 py-2 px-2 bg-primary text-secondary rounded-md hover:opacity-75
+  flex gap-1 py-2 px-2 border-primary border-l-4 bg-tertiary font-bold text-secondary hover:opacity-75 text-lg
 `
 
 const unselectedClassName = `
-  flex gap-1 py-2 px-2 border border-primary bg-secondary text-primary rounded-md hover:opacity-75
+  flex gap-1 py-2 px-2 border-tertiary border-l-4 bg-primary font-bold text-secondary hover:opacity-50 text-lg
 `
 
 const Navigation = () => {
@@ -17,8 +17,10 @@ const Navigation = () => {
 
   if (showNav) {
     return (
-      <div className="app-logo flex gap-3 items-center">
-        <Link className="flex items-center justify-center gap-2 py-2 pl-0 pr-2 text-4xl font-bold font-italic font-serif hover:brightness-150 transition-[filter]" to="/"><img className="w-14 h-14 mb-1 stroke-primary" src="lightbulb.svg" alt="muchidea icon"/> Much Idea</Link>
+      <div className="flex mt-4 gap-3 items-center border-b-4 border-tertiary bg-transparent">
+        <Link className="flex items-center justify-center gap-2 py-2 pl-0 pr-2 text-6xl font-bold font-mono" to="/">
+          muchidea<span className="text-quinary">.xyz</span>
+        </Link>
         <Link className={location.pathname === '/edit' ? selectedClassName : unselectedClassName} to="/edit">
           <PencilSquareIcon className="h-6 w-6"/>
           Edit

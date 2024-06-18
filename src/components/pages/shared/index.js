@@ -36,9 +36,9 @@ const Shared = ({
 
   useEffect(() => {
     if (conceptMapId) {
-      document.title = `Much Idea | ${conceptMapId}`;
+      document.title = `muchidea.xyz | ${conceptMapId}`;
     } else {
-      document.title = `Much Idea`;
+      document.title = `muchidea.xyz`;
     }
   }, [conceptMapId])
 

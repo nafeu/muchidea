@@ -15,13 +15,13 @@ import {
 } from '@heroicons/react/24/outline'
 
 import Preview from '../preview';
+import Tooltip from '../tooltip';
 
-const buttonClassName = `flex gap-1 text-primary bg-secondary brightness-75 rounded-md px-2 py-1 hover:opacity-50`;
-const buttonDisabledClassName = `flex gap-1 text-primary bg-secondary brightness-75 rounded-md px-2 py-1 opacity-25`;
-const selectClassName = `cursor-pointer text-primary bg-secondary brightness-75 rounded-md px-2 py-1.5`;
-const inputClassName = `text-secondary bg-primary brightness-75 rounded-md px-2 py-1`;
+const buttonClassName = `flex gap-1 text-primary bg-secondary px-2 py-1 hover:opacity-50`;
+const buttonDisabledClassName = `flex gap-1 text-primary bg-secondary px-2 py-1 opacity-25`;
+const selectClassName = `cursor-pointer text-primary bg-secondary px-2 py-1.5`;
+const inputClassName = `text-secondary bg-primary px-2 py-1`;
 const iconClassName = `w-5 h-6`;
-const hiddenSmallScreenSpanClassName = 'hidden lg:block';
 
 const ONE_SECOND = 1000;
 
@@ -99,7 +99,7 @@ const Edit = ({
   }
 
   return (
-    <div className="flex grow flex-col pb-3">
+    <div className="flex grow flex-col pb-3 font-mono">
       <div className="flex gap-3 mt-3">
         {conceptMapId && (
           <Fragment>
@@ -117,119 +117,125 @@ const Edit = ({
           </Fragment>
         )}
         {conceptMapId && (
-          <button className={buttonClassName} onClick={onClickRenameConceptMap}>
-            {
-              isRenameMode ? (
-                <Fragment>
-                  <CheckIcon className={iconClassName} />
-                  <span className={hiddenSmallScreenSpanClassName}>Done</span>
-                </Fragment>
-              ) : (
-                <Fragment>
-                  <PencilIcon className={iconClassName} />
-                  <span className={hiddenSmallScreenSpanClassName}>Rename</span>
-                </Fragment>
-              )}
-          </button>
+          <Tooltip content="rename">
+            <button className={buttonClassName} onClick={onClickRenameConceptMap}>
+              {
+                isRenameMode ? (
+                  <Fragment>
+                    <CheckIcon className={iconClassName} />
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    <PencilIcon className={iconClassName} />
+                  </Fragment>
+                )}
+            </button>
+          </Tooltip>
         )}
         {isDeleteMode ? (
           <div className="flex gap-2 items-center">
             <div className="font-bold">Are You Sure?</div>
-            <button className={buttonClassName} onClick={onConfirmDelete}>
-              <CheckIcon className={iconClassName} />
-            </button>
-            <button className={buttonClassName} onClick={onCancelDelete}>
-              <XMarkIcon className={iconClassName} />
-            </button>
+              <button className={buttonClassName} onClick={onConfirmDelete}>
+                <CheckIcon className={iconClassName} />
+              </button>
+              <button className={buttonClassName} onClick={onCancelDelete}>
+                <XMarkIcon className={iconClassName} />
+              </button>
           </div>
         ) : (
           <Fragment>
             {conceptMapId && (
-              <button className={buttonClassName} onClick={onDeleteConceptMap}>
-                <TrashIcon className={iconClassName}/>
-                <span className={hiddenSmallScreenSpanClassName}>Delete</span>
-              </button>
+              <Tooltip content="delete">
+                <button className={buttonClassName} onClick={onDeleteConceptMap}>
+                  <TrashIcon className={iconClassName}/>
+                </button>
+              </Tooltip>
             )}
           </Fragment>
         )}
-        <button className={buttonClassName} onClick={handleClickNewConceptMap}>
-          <PlusIcon className={iconClassName}/>
-          <span className={hiddenSmallScreenSpanClassName}>New</span>
-        </button>
+        <Tooltip content="create new">
+          <button className={buttonClassName} onClick={handleClickNewConceptMap}>
+            <PlusIcon className={iconClassName}/>
+          </button>
+        </Tooltip>
         {isSignedIn && (
           <Fragment>
           {conceptMapId && isSaving ? (
             <button className={buttonClassName}>
               <EllipsisHorizontalIcon className={iconClassName}/>
-              <span className={hiddenSmallScreenSpanClassName}>Saving</span>
             </button>
           ) : (
-            <button className={buttonClassName} onClick={onClickSave}>
-              <DocumentCheckIcon className={iconClassName}/>
-              <span className={hiddenSmallScreenSpanClassName}>Save</span>
-            </button>
+            <Tooltip content="save">
+              <button className={buttonClassName} onClick={onClickSave}>
+                <DocumentCheckIcon className={iconClassName}/>
+              </button>
+            </Tooltip>
           )}
           {conceptMapId && isPublishing ? (
             <button disabled className={buttonDisabledClassName}>
               <EllipsisHorizontalIcon className={iconClassName}/>
-              <span className={hiddenSmallScreenSpanClassName}>Publishing</span>
             </button>
           ) : (
-            <button className={buttonClassName} onClick={onClickPublish}>
-              <CloudArrowUpIcon className={iconClassName}/>
-              <span className={hiddenSmallScreenSpanClassName}>Publish</span>
-            </button>
+            <Tooltip content="publish">
+              <button className={buttonClassName} onClick={onClickPublish}>
+                <CloudArrowUpIcon className={iconClassName}/>
+              </button>
+            </Tooltip>
           )}
           {conceptMapId && isPublished ? (
             <CopyToClipboard
               text={shareUrl}
               onCopy={handleClickCopy}
             >
-              <button className={buttonClassName}>
-                {isCopied ? <CheckCircleIcon className={iconClassName}/> : <ClipboardIcon className={iconClassName}/>}
+              <Tooltip content="copy public url">
+                <button className={buttonClassName}>
+                  {isCopied ? <CheckCircleIcon className={iconClassName}/> : <ClipboardIcon className={iconClassName}/>}
 
-                <span className={hiddenSmallScreenSpanClassName}>{isCopied ? 'Copied To Clipboard.' : 'Copy Public URL'}</span>
-              </button>
+                </button>
+              </Tooltip>
             </CopyToClipboard>
           ) : (
             <button className={buttonDisabledClassName}>
               <ClipboardIcon className={iconClassName}/>
-              <span className={hiddenSmallScreenSpanClassName}>Copy Public URL</span>
             </button>
           )}
           {conceptMapId && isPublished ? (
-            <a href={shareUrl} target="_blank" rel="noreferrer" className={buttonClassName}>
-              <EyeIcon className={iconClassName}/>
-              <span className={hiddenSmallScreenSpanClassName}>View</span>
-            </a>
+            <Tooltip content="preview generator">
+              <a href={shareUrl} target="_blank" rel="noreferrer" className={buttonClassName}>
+                <EyeIcon className={iconClassName}/>
+              </a>
+            </Tooltip>
           ) : (
-            <button className={buttonDisabledClassName}>
-              <EyeIcon className={iconClassName}/>
-              <span className={hiddenSmallScreenSpanClassName}>View</span>
-            </button>
+            <Tooltip content="preview (for published generators only)">
+              <button className={buttonDisabledClassName}>
+                <EyeIcon className={iconClassName}/>
+              </button>
+            </Tooltip>
             )}
           </Fragment>
         )}
       </div>
       {conceptMapText ? (
-        <div className="flex grow">
+        <div className="flex grow font-mono">
           <div className="flex flex-col pt-3 w-4/6">
-            <div className="text-sm font-bold text-center underline text-secondary bg-primary rounded-t-md">Description</div>
+            <div className="text-sm font-bold text-center py-1 text-primary bg-quaternary">concept map</div>
             <textarea
-              className="p-4 resize-none bg-secondary brightness-75 h-36 text-primary rounded-md scrollbar outline-0 mb-3"
-              placeholder="Enter description (Markdown supported)"
-              onChange={onChangeConceptMapDescription}
-              value={conceptMapDescription}
-            />
-            <div className="text-sm font-bold text-center underline text-secondary bg-primary rounded-t-md">Concept Map</div>
-            <textarea
-              className="p-4 resize-none bg-secondary brightness-75 text-primary rounded-md scrollbar outline-0 grow"
+              className="p-4 resize-none bg-secondary text-primary border-b-2 border-quaternary scrollbar outline-0 grow"
               placeholder="Enter concepts"
               onChange={onChangeConceptMapText}
               value={conceptMapText}
             />
           </div>
           <div className="flex flex-col pt-3 w-2/6">
+            <div className="flex flex-col pl-3 mb-4">
+              <div className="text-sm font-bold text-center py-1 text-secondary bg-tertiary">description (markdown)</div>
+              <textarea
+                className="p-4 resize-none bg-secondary h-44 text-primary border-b-2 border-tertiary scrollbar outline-0"
+                placeholder="Enter description (Markdown supported)"
+                onChange={onChangeConceptMapDescription}
+                value={conceptMapDescription}
+              />
+            </div>
             <Preview conceptMapDescription={conceptMapDescription} />
           </div>
         </div>

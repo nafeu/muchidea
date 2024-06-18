@@ -34,10 +34,10 @@ const Auth = ({
 
   if (isSignedIn) {
     return (
-      <div className="absolute right-4 top-4 text-sm">
+      <div className="absolute font-mono right-2 top-2 text-sm">
         <div className="flex gap-2">
           <div>Logged in as <span className="font-bold">{user.displayName?.split(' ')[0] || 'Guest'}</span></div>
-          <button className="border border-primary rounded-md px-1.5 hover:opacity-50" onClick={handleClickLogout}>Logout</button>
+          <button className="text-primary bg-quinary px-2 hover:opacity-50" onClick={handleClickLogout}>Logout</button>
         </div>
       </div>
     );
@@ -46,7 +46,7 @@ const Auth = ({
   return (
     <div className="absolute right-4 top-4 text-sm">
       <div className="flex gap-2">
-        <button className="bg-primary text-secondary rounded-md px-1.5 hover:opacity-50" onClick={handleClickLoginGoogle}>Sign In To Share Generators</button>
+        <button className="bg-primary text-secondary px-1.5 hover:opacity-50" onClick={handleClickLoginGoogle}>Sign In To Share Generators</button>
       </div>
     </div>
   )
