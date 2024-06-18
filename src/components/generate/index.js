@@ -17,7 +17,7 @@ import {
 
 import Results from '../results';
 
-const iconButtonClassName = `w-6 h-6 text-secondary bg-primary rounded-full hover:opacity-50 active:opacity-25 cursor-pointer`;
+const iconButtonClassName = `w-6 h-6 text-secondary bg-quinary rounded-full hover:opacity-50 active:opacity-25 cursor-pointer`;
 
 const Generate = ({
   conceptCollection,
@@ -52,7 +52,7 @@ const Generate = ({
   const [reset, setReset] = useState(false);
 
   const prompts = [
-    'How many results would you like to generate?',
+    'How many results to generate?',
     'How many would you like to pick?',
     'Selection complete.'
   ];
@@ -93,11 +93,12 @@ const Generate = ({
   const showGeneratePrompt = !isGeneratingFinished && !isPickingFinished;
   const showPickingPrompt = isGeneratingFinished && !isPickingFinished;
   const showFinishedPrompt = isGeneratingFinished && isPickingFinished;
+  const hasDescription = conceptMapDescription && conceptMapDescription.length > 0
 
   return (
     <div className="grow bg-secondary font-mono p-4 overflow-hidden">
       {conceptMapId ? (
-        <div className="flex grow h-full overflow-hidden">
+        <div className="flex grow h-full overflow-hidden justify-center">
           <div className={`flex flex-col items-center gap-1 w-4/6 overflow-hidden ${conceptCollection ? '' : 'justify-center'}`}>
             {conceptCollection && (
               <div className="w-full mb-4">
@@ -114,7 +115,7 @@ const Generate = ({
               {promptTextPropsTransition((style, promptText) => (
                 <animated.div
                   style={style}
-                  className="text-3xl font-thin max-h-14 absolute text-center"
+                  className="text-3xl max-h-14 absolute text-center text-tertiary font-bold"
                 >
                   {promptText}
                 </animated.div>
@@ -122,10 +123,10 @@ const Generate = ({
             </div>
             {showGeneratePrompt && (
               <Fragment>
-                <div className="select-none w-full flex items-center justify-center text-2xl gap-2 py-1 mt-4 mb-1">
+                <div className="select-none w-full flex items-center justify-center text-2xl gap-2 py-1 mb-1">
                   <MinusIcon className={iconButtonClassName} onClick={onDecrementResultsCount} />
                   <input
-                    className="text-center bg-secondary border-primary border w-1/6"
+                    className="text-center bg-quinary text-secondary w-1/6"
                     type="number"
                     min={MIN_RESULTS_COUNT}
                     max={MAX_RESULTS_COUNT}
@@ -135,7 +136,7 @@ const Generate = ({
                   />
                   <PlusIcon className={iconButtonClassName} onClick={onIncrementResultsCount} />
                 </div>
-                <button className="select-none text-xl font-bold text-secondary bg-primary w-1/4  h-10 active:hover:brightness-125 transition-[filter]" onClick={onClickGenerateResults}>
+                <button className="select-none text-xl font-bold text-secondary bg-quaternary w-1/4 h-10 active:hover:brightness-125 transition-[filter]" onClick={onClickGenerateResults}>
                   {isGenerating ? (
                     <div className="flex items-center justify-center">
                       <svg className="animate-spin h-6 w-6 mr-2 fill-secondary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -158,7 +159,7 @@ const Generate = ({
                 <div className="select-none w-full flex items-center justify-center text-2xl gap-2 py-1 mb-1">
                   <MinusIcon className={iconButtonClassName} onClick={onDecrementPickCount} />
                   <input
-                    className="text-center bg-secondary border-primary border w-1/6"
+                    className="text-center bg-quinary text-primary w-1/6"
                     type="number"
                     min={MIN_PICK_COUNT}
                     max={resultsCount}
@@ -168,7 +169,7 @@ const Generate = ({
                   />
                   <PlusIcon className={iconButtonClassName} onClick={onIncrementPickCount} />
                 </div>
-                <button className="select-none text-xl font-bold text-secondary bg-primary w-1/4  h-10 active:hover:brightness-125 transition-[filter]" onClick={onClickPickResults}>
+                <button className="select-none text-xl font-bold text-secondary bg-tertiary w-1/4  h-10 active:hover:brightness-125 transition-[filter]" onClick={onClickPickResults}>
                   {isPicking ? (
                     <div className="flex items-center justify-center">
                       <svg className="animate-spin h-6 w-6 mr-2 fill-secondary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -191,7 +192,7 @@ const Generate = ({
                 <div className="select-none w-full flex items-center justify-center text-2xl gap-2 py-1 mb-1 opacity-25">
                   <MinusIcon className={iconButtonClassName} onClick={() => {}} />
                   <input
-                    className="text-center bg-secondary border-primary border  w-1/6"
+                    className="text-center bg-quinary w-1/6"
                     type="number"
                     min={MIN_RESULTS_COUNT}
                     max={MAX_RESULTS_COUNT}
@@ -227,11 +228,13 @@ const Generate = ({
               setPickCount={setPickCount}
             />
           </div>
-          <div className="border-l-2 w-2/6 ml-2">
-            <div className="border-primary grow prose prose-invert p-5">
-              <ReactMarkdown children={conceptMapDescription} remarkPlugins={[remarkGfm]} />
+          {hasDescription && (
+            <div className="border-l-2 border-quinary w-2/6 ml-2">
+              <div className="grow prose prose-invert p-5">
+                <ReactMarkdown children={conceptMapDescription} remarkPlugins={[remarkGfm]} />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       ) : (
         <Fragment>

@@ -181,7 +181,7 @@ const Results = ({
 
               return (
                 <animated.div
-                  className={`flex items-center justify-center border bg-secondary block ${getResultStylesByLength(results.length)} transition-[filter,border] hover:brightness-150 cursor-pointer w-full box-border ${isPicked ? 'brightness-150' : 'brightness-75'} ${(isPicked && !isPicking) ? 'border-primary' : 'border-secondary'}`}
+                  className={`flex items-center p-4 justify-center bg-secondary block ${getResultStylesByLength(results.length)} transition-[filter,background,color] hover:brightness-150 cursor-pointer w-full box-border ${isPicked ? 'bg-tertiary' : 'brightness-75'} ${(isPicked && !isPicking) ? '!bg-quaternary text-secondary font-bold' : ''}`}
                   style={rest}
                   key={idea}
                 >

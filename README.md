@@ -1,4 +1,4 @@
-# 🤔 Much Idea
+# 🤔 muchidea.xyz
 
 Ultra simple hierarchical idea generator. [Check out the live application here](https://muchidea.web.app).
 

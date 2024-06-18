@@ -9,12 +9,26 @@
   }
 
   .scrollbar::-webkit-scrollbar-track {
-    background: black;
+    background: #2A2B2A;
   }
 
   .scrollbar::-webkit-scrollbar-thumb {
-    background: white;
-    border: 2px solid white;
+    background: #F8F4E3;
+    border: 2px solid #F8F4E3;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar-track {
+    background: #2A2B2A;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar-thumb {
+    background: #F8F4E3;
+    border: 2px solid #F8F4E3;
   }
 }
 

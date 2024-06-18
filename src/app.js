@@ -78,8 +78,8 @@ function App({ isSignedIn, user, config, firebase }) {
   }
 
   return (
-    <div className="app p-5 h-screen bg-secondary text-primary">
-      <div className="app-container h-full">
+    <div className="app p-5 h-screen bg-secondary text-primary flex justify-center">
+      <div className="app-container h-full xl:w-8/12 lg:w-full">
         <FirestoreProvider firebase={firebase} {...config}>
           <Router>
             <div className="flex flex-col h-full justify-between">

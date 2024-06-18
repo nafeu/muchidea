@@ -18,7 +18,7 @@ const Navigation = () => {
   if (showNav) {
     return (
       <div className="flex mt-4 gap-3 items-center border-b-4 border-tertiary bg-transparent">
-        <Link className="flex items-center justify-center gap-2 py-2 pl-0 pr-2 text-6xl font-bold font-mono" to="/">
+        <Link className="flex items-center justify-center py-2 pl-0 pr-2 text-6xl font-bold font-mono" to="/">
           muchidea<span className="text-quinary">.xyz</span>
         </Link>
         <Link className={location.pathname === '/edit' ? selectedClassName : unselectedClassName} to="/edit">
