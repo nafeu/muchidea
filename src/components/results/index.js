@@ -34,7 +34,9 @@ const Results = ({
   results,
   pickCount,
   isGenerating,
+  isGeneratingFinished,
   isPicking,
+  isPickingFinished,
   setIsPicking,
   setIsPickingFinished,
   setIsGenerating,
@@ -51,6 +53,9 @@ const Results = ({
   const pickingFinishedTimer = useRef();
 
   const [generatedResults, setGeneratedResults] = useState([]);
+  const [pickedResults, setPickedResults] = useState([]);
+  const [isAllCopied, setIsAllCopied] = useState(false)
+  const [isPickedCopied, setIsPickedCopied] = useState(false)
 
   const transitions = useTransition(generatedResults, {
     from: {
@@ -140,6 +145,14 @@ const Results = ({
       }
     }
 
+    setPickedResults(
+      pickedResultsSequence[pickedResultsSequence.length - 1].filter(
+        (encodedIdea) => JSON.parse(encodedIdea).isPicked,
+      ).map(
+        (encodedIdea) => JSON.parse(encodedIdea).idea,
+      )
+    );
+
     pickingTimer.current = setTimeout(() => setIsPicking(false), ANIMATION_SPEED_MS * (pickedResultsSequence.length + 3));
     pickingFinishedTimer.current = setTimeout(() => setIsPickingFinished(true), ANIMATION_SPEED_MS * (pickedResultsSequence.length + 3));
   }, [isPicking])
@@ -157,6 +170,28 @@ const Results = ({
 
     return () => resetAllTimers();
   }, [isGenerating, isPicking, issuesDuringGeneration]);
+
+  const handleClickCopyIdea = idea => {
+    navigator.clipboard.writeText(idea)
+  }
+
+  const handleClickCopyAll = () => {
+    navigator.clipboard.writeText(results.join('\n'));
+    setIsAllCopied(true);
+
+    setTimeout(() => {
+      setIsAllCopied(false);
+    }, 1000)
+  }
+
+  const handleClickCopyPicked = () => {
+    navigator.clipboard.writeText(pickedResults.join('\n'));
+    setIsPickedCopied(true);
+
+    setTimeout(() => {
+      setIsPickedCopied(false);
+    }, 1000)
+  }
 
   const hasIssuesGenerating = issuesDuringGeneration.length > 0;
 
@@ -181,9 +216,27 @@ const Results = ({
 
               return (
                 <animated.div
-                  className={`flex items-center p-4 justify-center bg-secondary block ${getResultStylesByLength(results.length)} transition-[filter,background,color] hover:brightness-150 cursor-pointer w-full box-border ${isPicked ? 'bg-tertiary' : 'brightness-75'} ${(isPicked && !isPicking) ? '!bg-quaternary text-secondary font-bold' : ''}`}
+                  className={`
+                    flex
+                    items-center
+                    p-4
+                    justify-center
+                    bg-secondary
+                    block
+                    ${getResultStylesByLength(results.length)}
+                    transition-[filter,background,color]
+                    hover:brightness-150
+                    active:bg-tertiary
+                    active:text-secondary
+                    cursor-pointer
+                    w-full
+                    box-border
+                    ${isPicked ? 'bg-tertiary' : 'brightness-75'}
+                    ${(isPicked && !isPicking) ? '!bg-quaternary text-secondary font-bold' : ''}`
+                  }
                   style={rest}
                   key={idea}
+                  onClick={() => handleClickCopyIdea(idea)}
                 >
                   <div style={{ height: innerHeight }}>
                     {idea}
@@ -191,6 +244,32 @@ const Results = ({
                 </animated.div>
               )
             })}
+          </div>
+          <div className="flex justify-center gap-2">
+            {!isPicking && !isGenerating && isGeneratingFinished && (
+              <button
+                className="bg-quinary text-xs p-1"
+                onClick={handleClickCopyAll}>{
+                  isAllCopied ? (
+                    'Copied.'
+                  ) : (
+                    'Copy All Options'
+                  )
+                }
+              </button>
+            )}
+            {!isPicking && !isGenerating && isPickingFinished && (
+              <button
+                className="bg-quinary text-xs p-1"
+                onClick={handleClickCopyPicked}>{
+                  isPickedCopied ? (
+                    'Copied.'
+                  ) : (
+                    'Copy Picked'
+                  )
+                }
+              </button>
+            )}
           </div>
         </div>
       )}

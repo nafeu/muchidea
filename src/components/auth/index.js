@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 const Auth = ({
   user,
@@ -9,6 +9,10 @@ const Auth = ({
   onLogout
 }) => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginStatus, setLoginStatus] = useState('Logging In...');
+  const [showModal, setShowModal]     = useState(false);
+
+  const dialogRef = useRef(null)
 
   const handleClickLogout = () => {
     firebase.auth().signOut();
@@ -16,20 +20,37 @@ const Auth = ({
   }
 
   const handleClickLoginGoogle = () => {
+    setShowModal(true)
     setIsLoggingIn(true);
     const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(googleAuthProvider)
       .then((result) => {
         setIsLoggingIn(false);
+        setShowModal(false)
         onLogin(result.user);
       })
       .catch((loginError) => {
-        console.log({ loginError })
+        setLoginStatus('There was a problem logging you in...')
+        setTimeout(() => {
+          window.location.reload(false)
+        }, 2000)
       });
   }
 
+  useEffect(() => {
+    if (dialogRef.current?.open && !showModal) {
+      dialogRef.current?.close()
+    } else if (!dialogRef.current?.open && showModal) {
+      dialogRef.current?.showModal()
+    }
+  }, [showModal])
+
   if (isLoggingIn) {
-    return 'Logging in...'
+    return (
+      <dialog ref={dialogRef}>
+        {loginStatus}
+      </dialog>
+    )
   }
 
   if (isSignedIn) {

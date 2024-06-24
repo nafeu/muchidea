@@ -47,3 +47,15 @@ input[type="number"] {
 * {
   outline: none;
 }
+
+.app-loading {
+  display: flex;
+  justify-content: center;
+  background-color: #2A2B2A;
+  color: #F8F4E3;
+  height: 100vh;
+}
+
+.app-loading div {
+  margin-top: 30vh;
+}

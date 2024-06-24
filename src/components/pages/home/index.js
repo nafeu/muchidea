@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { withRouter, Switch, Route } from 'react-router-dom';
+import { withRouter, Switch, Route, useLocation } from 'react-router-dom';
 import { find } from 'lodash';
 
 import Auth from '../../auth';
 import Edit from '../../edit';
 import Generate from '../../generate';
 import Landing from '../../landing';
+
+import { withAlertDialog, useAlertDialog } from '../../../hooks/useAlertDialog'
 
 import { generateIdeas } from '../../../services/idea';
 import { buildConcepts } from '../../../services/concept';
@@ -25,29 +27,74 @@ const Home = ({
   setIsLoading,
   isSignedIn
 }) => {
-  const [results, setResults] = useState(localData.results);
-  const [issuesDuringGeneration, setIssuesDuringGeneration] = useState(localData.issuesDuringGeneration);
+  const location = useLocation();
+  const alertDialog = useAlertDialog();
 
-  const [resultsCount, setResultsCount] = useState(DEFAULT_RESULTS_COUNT);
-  const [pickCount, setPickCount] = useState(DEFAULT_PICK_COUNT);
+  const initialState = {
+    results: localData.results,
+    issuesDuringGeneration: localData.issuesDuringGeneration,
+    resultsCount: DEFAULT_RESULTS_COUNT,
+    pickCount: DEFAULT_PICK_COUNT,
+    conceptCollection: localData.conceptCollection,
+    conceptMapText: localData.conceptMapText,
+    conceptMapId: localData.conceptMapId,
+    conceptMapIdRenaming: localData.conceptMapId,
+    conceptMapDescription: localData.conceptMapDescription,
+    isRenameMode: false,
+    isDeleteMode: false,
+    isSaving: false,
+    isPublishing: false,
+    isGenerating: false,
+    isGeneratingFinished: false,
+    isPicking: false,
+    isPickingFinished: false
+  }
 
-  const [conceptCollection, setConceptCollection] = useState(localData.conceptCollection);
+  const [results, setResults] = useState(initialState.results);
+  const [issuesDuringGeneration, setIssuesDuringGeneration] = useState(initialState.issuesDuringGeneration);
 
-  const [conceptMapText, setConceptMapText] = useState(localData.conceptMapText);
-  const [conceptMapId, setConceptMapId] = useState(localData.conceptMapId);
-  const [conceptMapIdRenaming, setConceptMapIdRenaming] = useState(localData.conceptMapId);
-  const [conceptMapDescription, setConceptMapDescription] = useState(localData.conceptMapDescription);
+  const [resultsCount, setResultsCount] = useState(initialState.resultsCount);
+  const [pickCount, setPickCount] = useState(initialState.pickCount);
 
-  const [isRenameMode, setIsRenameMode] = useState(false);
-  const [isDeleteMode, setIsDeleteMode] = useState(false);
+  const [conceptCollection, setConceptCollection] = useState(initialState.conceptCollection);
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [isPublishing, setIsPublishing] = useState(false);
+  const [conceptMapText, setConceptMapText] = useState(initialState.conceptMapText);
+  const [conceptMapId, setConceptMapId] = useState(initialState.conceptMapId);
+  const [conceptMapIdRenaming, setConceptMapIdRenaming] = useState(initialState.conceptMapIdRenaming);
+  const [conceptMapDescription, setConceptMapDescription] = useState(initialState.conceptMapDescription);
 
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isGeneratingFinished, setIsGeneratingFinished] = useState(false);
-  const [isPicking, setIsPicking] = useState(false);
-  const [isPickingFinished, setIsPickingFinished] = useState(false);
+  const [isRenameMode, setIsRenameMode] = useState(initialState.isRenameMode);
+  const [isDeleteMode, setIsDeleteMode] = useState(initialState.isDeleteMode);
+
+  const [isSaving, setIsSaving] = useState(initialState.isSaving);
+  const [isPublishing, setIsPublishing] = useState(initialState.isPublishing);
+
+  const [isGenerating, setIsGenerating] = useState(initialState.isGenerating);
+  const [isGeneratingFinished, setIsGeneratingFinished] = useState(initialState.isGeneratingFinished);
+  const [isPicking, setIsPicking] = useState(initialState.isPicking);
+  const [isPickingFinished, setIsPickingFinished] = useState(initialState.isPickingFinished);
+
+  const [isLoadingMap, setIsLoadingMap] = useState(false)
+
+  useEffect(() => {
+    setResults(initialState.results)
+    setIssuesDuringGeneration(initialState.issuesDuringGeneration)
+    setResultsCount(initialState.resultsCount)
+    setPickCount(initialState.pickCount)
+    setConceptCollection(initialState.conceptCollection)
+    setConceptMapText(initialState.conceptMapText)
+    setConceptMapId(initialState.conceptMapId)
+    setConceptMapIdRenaming(initialState.conceptMapIdRenaming)
+    setConceptMapDescription(initialState.conceptMapDescription)
+    setIsRenameMode(initialState.isRenameMode)
+    setIsDeleteMode(initialState.isDeleteMode)
+    setIsSaving(initialState.isSaving)
+    setIsPublishing(initialState.isPublishing)
+    setIsGenerating(initialState.isGenerating)
+    setIsGeneratingFinished(initialState.isGeneratingFinished)
+    setIsPicking(initialState.isPicking)
+    setIsPickingFinished(initialState.isPickingFinished)
+  }, [location])
 
   useEffect(() => {
     if (conceptMapId) {
@@ -62,6 +109,14 @@ const Home = ({
       generateNewIdeas();
     }
   }, [])
+
+  useEffect(() => {
+    if (isLoadingMap) {
+      setTimeout(() => {
+        setIsLoadingMap(false)
+      }, 1000)
+    }
+  }, [isLoadingMap])
 
   const generateNewIdeas = () => {
     setIsGenerating(true);
@@ -161,6 +216,8 @@ const Home = ({
   }
 
   const handleSelectConceptMap = event => {
+    setIsLoadingMap(true)
+
     const selectedId = event.target.value;
 
     const {
@@ -254,8 +311,7 @@ const Home = ({
       return;
     }
 
-    // TODO: Handle error messages
-    alert(error);
+    alertDialog(error);
   }
 
   const handleChangeConceptMapId = event => {
@@ -282,6 +338,8 @@ const Home = ({
       conceptMapId: newConceptMap.id,
       conceptCollection: updatedConceptCollection,
     });
+
+    handleClickRenameConceptMap()
   }
 
   const handleClickDeleteConceptMap = () => {
@@ -304,6 +362,8 @@ const Home = ({
       if (deletionIndex >= updatedConceptCollection.length) {
         deletionIndex = updatedConceptCollection.length - 1;
       }
+
+      setIsLoadingMap(true)
 
       if (updatedConceptCollection.length > 0) {
         const activeConceptMap = updatedConceptCollection[deletionIndex];
@@ -355,10 +415,8 @@ const Home = ({
 
       setIsSaving(false);
     } catch (error) {
-      // TODO: Handle error messages
       setIsSaving(false);
-      console.error(error);
-      alert(error);
+      alertDialog(error);
     }
   }
 
@@ -386,15 +444,12 @@ const Home = ({
           timestamp: (new Date()).getTime()
         })
       } else if (isNotAuthorized) {
-        // TODO: Handle error messages
-        console.log({ error: { message: 'This name is already in use.' }})
+        alertDialog('This name is already in use.');
       }
 
       setIsPublishing(false);
     } catch (error) {
-      // TODO: Handle error messages
-      alert(error);
-      console.error(error);
+      alertDialog(error);
       setIsPublishing(false);
     }
   }
@@ -419,8 +474,7 @@ const Home = ({
 
         window.location.reload(false);
       })
-      .catch((error) => { alert(error) })
-
+      .catch((error) => { alertDialog(error) })
   }
 
   const handleLogout = () => {
@@ -472,6 +526,7 @@ const Home = ({
             isRenameMode={isRenameMode}
             isSaving={isSaving}
             isSignedIn={isSignedIn}
+            isLoadingMap={isLoadingMap || localData.conceptMapText === undefined || localData.conceptMapId === undefined}
             onCancelDelete={handleClickCancelDelete}
             onChangeConceptMapDescription={handleChangeConceptMapDescription}
             onChangeConceptMapId={handleChangeConceptMapId}
@@ -498,6 +553,7 @@ const Home = ({
             isGeneratingFinished={isGeneratingFinished}
             isPicking={isPicking}
             isPickingFinished={isPickingFinished}
+            isLoadingMap={isLoadingMap || localData.conceptMapText === undefined || localData.conceptMapId === undefined}
             issuesDuringGeneration={issuesDuringGeneration}
             onBlurPickCount={handleBlurPickCount}
             onBlurResultsCount={handleBlurResultsCount}
@@ -536,4 +592,4 @@ const Home = ({
   )
 };
 
-export default withRouter(Home);
+export default withAlertDialog(withRouter(Home));

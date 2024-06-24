@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, useRef } from "react";
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
   CheckIcon,
@@ -16,6 +16,8 @@ import {
 
 import Preview from '../preview';
 import Tooltip from '../tooltip';
+
+import { useAlertDialog } from '../../hooks/useAlertDialog'
 
 const buttonClassName = `flex gap-1 text-primary bg-secondary px-2 py-1 hover:opacity-50`;
 const buttonDisabledClassName = `flex gap-1 text-primary bg-secondary px-2 py-1 opacity-25`;
@@ -37,6 +39,7 @@ const Edit = ({
   isRenameMode,
   isSaving,
   isSignedIn,
+  isLoadingMap,
   onCancelDelete,
   onChangeConceptMapDescription,
   onChangeConceptMapId,
@@ -52,6 +55,9 @@ const Edit = ({
   onSelectConceptMap,
   user
 }) => {
+  const alertDialog = useAlertDialog();
+  const renameInputRef = useRef();
+
   const [isCopied, setIsCopied] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
 
@@ -73,9 +79,7 @@ const Edit = ({
         setIsPublished(true);
       }
     } catch (error) {
-      // TODO: Handle error messages
-      alert(error);
-      console.error(error);
+      alertDialog(error);
     }
   }
 
@@ -85,7 +89,14 @@ const Edit = ({
     checkIfIsPublished();
   }, [isSignedIn, isPublishing])
 
+  useEffect(() => {
+    if (isRenameMode) {
+      renameInputRef.current?.focus()
+    }
+  }, [isRenameMode])
+
   const handleClickCopy = () => {
+    navigator.clipboard.writeText(shareUrl);
     setIsCopied(true);
 
     setTimeout(() => {
@@ -98,13 +109,29 @@ const Edit = ({
     onClickNewConceptMap();
   }
 
+  if (isLoadingMap) {
+    return (
+      <div className="flex grow pt-60 justify-center pb-3">
+        <svg class="animate-spin -ml-1 mr-3 h-10 w-10 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+    )
+  }
+
   return (
     <div className="flex grow flex-col pb-3 font-mono">
       <div className="flex gap-3 mt-3">
         {conceptMapId && (
           <Fragment>
             {isRenameMode ? (
-              <input className={inputClassName} value={conceptMapIdRenaming} onChange={onChangeConceptMapId} />
+              <input
+                ref={renameInputRef}
+                className={inputClassName}
+                value={conceptMapIdRenaming}
+                onChange={onChangeConceptMapId}
+              />
             ) : (
               <select className={selectClassName} value={conceptMapId} onChange={onSelectConceptMap}>
                 {conceptCollection.map(({ id }) => {
@@ -188,9 +215,8 @@ const Edit = ({
               onCopy={handleClickCopy}
             >
               <Tooltip content="copy public url">
-                <button className={buttonClassName}>
+                <button className={buttonClassName} onClick={handleClickCopy}>
                   {isCopied ? <CheckCircleIcon className={iconClassName}/> : <ClipboardIcon className={iconClassName}/>}
-
                 </button>
               </Tooltip>
             </CopyToClipboard>
